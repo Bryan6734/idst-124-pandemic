@@ -25,7 +25,7 @@ export default function Home() {
     const [isAttacking, setIsAttacking] = useState(false);
 
     // Create ref to Chat component's updateStepMessage function
-    const chatRef = useRef<{ updateStepMessage: (desc: string) => void }>();
+    const chatRef = useRef<{ updateStepMessage: (desc: string, step: number) => void; createSkeleton: () => void }>();
     
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -52,7 +52,8 @@ export default function Home() {
                             onModelSelect={setSelectedModel}
                             onAttackSelect={setSelectedAttack}
                             isAttacking={isAttacking}
-                            onStepReady={(desc) => chatRef.current?.updateStepMessage(desc)}
+                            onStepReady={(desc, step) => chatRef.current?.updateStepMessage(desc, step)}
+                            onContinue={() => chatRef.current?.createSkeleton()}
                         />
                         <div className="flex flex-col gap-4 lg:col-span-2">
                             <div className="flex-grow">

@@ -11,8 +11,9 @@ interface AttackProgressProps {
     selectedModel?: string;
     selectedAttack?: string;
     isAttacking: boolean;
-    onStepReady?: (stepDescription: string) => void;
+    onStepReady?: (stepDescription: string, step: number) => void;
     onComplete?: () => void;
+    onContinue?: () => void;
 }
 
 export function AttackProgress({ 
@@ -20,7 +21,8 @@ export function AttackProgress({
     selectedAttack, 
     isAttacking,
     onStepReady,
-    onComplete 
+    onComplete,
+    onContinue
 }: AttackProgressProps) {
     const [currentStep, setCurrentStep] = useState(0);
     const [progress, setProgress] = useState(0);
@@ -64,7 +66,7 @@ export function AttackProgress({
                     // Get current step description and notify parent
                     const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
                     if (steps?.[currentStep]) {
-                        onStepReady?.(steps[currentStep].description);
+                        onStepReady?.(steps[currentStep].description, currentStep);
                     }
                     
                     return 100;
@@ -78,6 +80,7 @@ export function AttackProgress({
 
     const handleContinue = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent default button behavior
+        onContinue?.(); 
         setCurrentStep(step => step + 1);
         setProgress(0);
         setStepComplete(false);

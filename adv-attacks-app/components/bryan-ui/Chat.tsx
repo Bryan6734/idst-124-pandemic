@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { getStepDescription } from "@/lib/step-descriptions";
 
 interface Message {
     sender: "user" | "assistant";
@@ -30,7 +31,10 @@ const MODEL_GREETINGS: Record<string, string> = {
     'llama': "Hey there! I'm Llama, Meta's advanced language model. I'm designed to help with a wide range of tasks while being transparent about my capabilities and limitations."
 };
 
-export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, ChatProps>(({ 
+export const Chat = forwardRef<{ 
+    updateStepMessage: (desc: string, step: number) => void;
+    createSkeleton: () => void;
+}, ChatProps>(({ 
     selectedPrompt, 
     selectedModel,
     selectedAttack,
@@ -42,26 +46,32 @@ export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, Ch
     const [isTyping, setIsTyping] = useState(false);
     const [isAttackStarted, setIsAttackStarted] = useState(false);
 
+    const createSkeleton = () => {
+        setMessages(prev => [...prev, { 
+            sender: "user", 
+            text: selectedPrompt || "", 
+            isSkeleton: true 
+        }]);
+    };
+
     const handleLaunchAttack = () => {
         if (!isAttackStarted && selectedPrompt && selectedModel && selectedAttack) {
             setIsAttackStarted(true);
             onAttackStart?.();
-            setMessages(prev => [...prev, { 
-                sender: "user", 
-                text: selectedPrompt, 
-                isSkeleton: true 
-            }]);
+            createSkeleton();
         }
     };
 
-    const updateStepMessage = (description: string) => {
+    const updateStepMessage = (description: string, step: number) => {
+        if (!selectedPrompt || !selectedAttack) return;
+        
         setMessages(prev => {
             const newMessages = [...prev];
             const skeletonIndex = newMessages.findIndex(m => m.isSkeleton);
             if (skeletonIndex !== -1) {
                 newMessages[skeletonIndex] = {
                     sender: "user",
-                    text: description,
+                    text: getStepDescription(selectedPrompt, selectedAttack, step),
                     isSkeleton: false
                 };
             }
@@ -156,7 +166,8 @@ export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, Ch
     }, [selectedPrompt]);
 
     useImperativeHandle(ref, () => ({
-        updateStepMessage
+        updateStepMessage,
+        createSkeleton
     }));
 
     return (
@@ -226,12 +237,12 @@ export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, Ch
                     ))}
                 </AnimatePresence>
             </div>
-            <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
+            <div className="relative overflow-hidden rounded-lg border bg-background">
                 <Textarea
                     id="message"
                     value={displayText}
                     placeholder="Select a harmful prompt in the control panel..."
-                    className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+                    className="min-h-[84px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
                     readOnly
                     onKeyDown={handleKeyDown}
                 />
@@ -282,3 +293,5 @@ export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, Ch
         </div>
     );
 });
+
+Chat.displayName = "Chat";

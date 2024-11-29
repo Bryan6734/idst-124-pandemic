@@ -32,7 +32,8 @@ interface ControlPanelsProps {
     onModelSelect?: (model: string) => void;
     onAttackSelect?: (attack: string) => void;
     isAttacking?: boolean;
-    onStepReady?: (desc: string) => void;
+    onStepReady?: (desc: string, step: number) => void;
+    onContinue?: () => void;
 }
 
 export function ControlPanels({ 
@@ -40,7 +41,8 @@ export function ControlPanels({
     onModelSelect, 
     onAttackSelect,
     isAttacking,
-    onStepReady
+    onStepReady,
+    onContinue
 }: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
@@ -207,8 +209,9 @@ export function ControlPanels({
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
                         isAttacking={isAttacking || false}
-                        onStepReady={onStepReady}
+                        onStepReady={(desc, step) => onStepReady?.(desc, step)}
                         onComplete={() => {}}
+                        onContinue={onContinue}
                     />
 				</fieldset>
 			</form>

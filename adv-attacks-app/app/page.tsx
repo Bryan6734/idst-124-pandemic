@@ -34,6 +34,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AnimatePresence, motion } from "framer-motion";
 
 
 
@@ -44,10 +45,12 @@ export default function Home() {
 	const { theme, setTheme } = useTheme();
 	const [showIntroModal, setShowIntroModal] = useState(true);
 	const [currentStep, setCurrentStep] = useState(0);
+	const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'assistant' }>>([]);
+	const [inputMessage, setInputMessage] = useState('');
 
 	const introSteps = [
 		{
-			title: "Welcome to Adversarial Attacks Playground",
+			title: "Welcome to A Visual Guide to Adversarial Attacks!",
 			content: "Explore and understand how AI models can be manipulated through various attack vectors. This interactive platform helps you visualize and comprehend different adversarial techniques."
 		},
 		{
@@ -55,8 +58,8 @@ export default function Home() {
 			content: "Try different attack methods, adjust parameters, and see real-time results. Our platform provides a hands-on approach to understanding AI vulnerabilities."
 		},
 		{
-			title: "Comprehensive Learning",
-			content: "Access detailed documentation, research papers, and practical examples. Learn about the latest developments in AI security and defense mechanisms."
+			title: "The Motivation",
+			content: "I'm Bryan Sukidi. I'm interested in AI safety and alignment. I created this project for the BlueDot AI Safety Fundamentals course, and I re-purposed it for Data 120!"
 		},
 		{
 			title: "Get Started",
@@ -78,54 +81,98 @@ export default function Home() {
 		}
 	};
 
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!inputMessage.trim()) return;
+		
+		setMessages(prev => [...prev, { text: inputMessage, sender: 'user' }]);
+		setInputMessage('');
+		// Here you would typically also handle the AI response
+	};
+
 	return (
 		<TooltipProvider delayDuration={100}>
 			<Dialog open={showIntroModal} onOpenChange={setShowIntroModal}>
-				<DialogContent className="sm:max-w-[500px]">
-					<DialogHeader>
-						<DialogTitle className="text-2xl font-bold">
-							{introSteps[currentStep].title}
-						</DialogTitle>
-					</DialogHeader>
-					<div className="py-4">
-						<p className="text-muted-foreground">
-							{introSteps[currentStep].content}
-						</p>
-					</div>
-					<div className="flex items-center justify-between">
-						<Button
-							variant="outline"
-							onClick={handleBack}
-							disabled={currentStep === 0}
+				<DialogContent className="sm:max-w-[500px] overflow-hidden">
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={currentStep}
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.15 }}
 						>
-							<ChevronLeft className="mr-2 h-4 w-4" />
-							Back
-						</Button>
-						<div className="flex gap-1">
-							{introSteps.map((_, index) => (
-								<div
-									key={index}
-									className={`h-2 w-2 rounded-full ${
-										index === currentStep ? "bg-primary" : "bg-muted"
-									}`}
-								/>
-							))}
-						</div>
-						<Button onClick={handleNext}>
-							{currentStep === introSteps.length - 1 ? (
-								"Get Started"
-							) : (
-								<>
-									Next
-									<ChevronRight className="ml-2 h-4 w-4" />
-								</>
-							)}
-						</Button>
-					</div>
+							<DialogHeader>
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={currentStep}
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -10 }}
+										transition={{ duration: 0.2, delay: 0.1 }}
+									>
+										<DialogTitle className="text-2xl font-bold">
+											{introSteps[currentStep].title}
+										</DialogTitle>
+									</motion.div>
+								</AnimatePresence>
+							</DialogHeader>
+							<motion.div
+								transition={{ duration: 0.2 }}
+							>
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={currentStep}
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -10 }}
+										transition={{ duration: 0.2, delay: 0.1 }}
+										className="py-4"
+									>
+										<p className="text-muted-foreground">
+											{introSteps[currentStep].content}
+										</p>
+									</motion.div>
+								</AnimatePresence>
+							</motion.div>
+							<motion.div>
+								<div className="flex items-center justify-between">
+									<Button
+										variant="outline"
+										onClick={handleBack}
+										disabled={currentStep === 0}
+									>
+										<ChevronLeft className="mr-2 h-4 w-4" />
+										Back
+									</Button>
+									<div className="flex gap-1">
+										{introSteps.map((_, index) => (
+											<div
+												key={index}
+												className={`h-2 w-2 rounded-full ${
+													index === currentStep ? "bg-primary" : "bg-muted"
+												}`}
+											/>
+										))}
+									</div>
+									<Button onClick={handleNext}>
+										{currentStep === introSteps.length - 1 ? (
+											"Get Started"
+										) : (
+											<>
+												Next
+												<ChevronRight className="ml-2 h-4 w-4" />
+											</>
+										)}
+									</Button>
+								</div>
+							</motion.div>
+						</motion.div>
+					</AnimatePresence>
 				</DialogContent>
 			</Dialog>
 			<div className="grid h-screen w-full pl-[56px]">
-				<aside className="inset-y fixed  left-0 z-20 flex h-full flex-col border-r">
+				<aside className="inset-y fixed left-0 z-20 flex h-full flex-col border-r">
 					<div className="border-b p-2">
 						<Button variant="outline" size="icon" aria-label="Home">
 							<Triangle className="size-5 fill-foreground" />
@@ -495,19 +542,38 @@ export default function Home() {
 							</form>
 						</div>
 						<div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
-							<Badge variant="outline" className="absolute right-3 top-3">
+							<Badge variant="outline" className="absolute right-3 top-3 z-10">
 								Output
 							</Badge>
-							<div className="flex-1" />
+							<div className="flex-1 space-y-4 overflow-y-auto pt-8">
+								<AnimatePresence initial={false}>
+									{messages.map((message, index) => (
+										<motion.div
+											key={index}
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											exit={{ opacity: 0, y: -20 }}
+											className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+										>
+											<div className={`max-w-[80%] rounded-lg p-3 ${
+												message.sender === 'user' 
+													? 'bg-primary/10 text-foreground'
+													: 'bg-muted'
+											}`}>
+												{message.text}
+											</div>
+										</motion.div>
+									))}
+								</AnimatePresence>
+							</div>
 							<form
+								onSubmit={handleSubmit}
 								className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
-								x-chunk="dashboard-03-chunk-1"
 							>
-								<Label htmlFor="message" className="sr-only">
-									Message
-								</Label>
 								<Textarea
 									id="message"
+									value={inputMessage}
+									onChange={(e) => setInputMessage(e.target.value)}
 									placeholder="Type your message here..."
 									className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
 								/>

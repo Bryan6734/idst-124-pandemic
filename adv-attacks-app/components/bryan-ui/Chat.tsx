@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 
 interface Message {
     sender: "user" | "assistant";
@@ -30,13 +30,13 @@ const MODEL_GREETINGS: Record<string, string> = {
     'llama': "Hey there! I'm Llama, Meta's advanced language model. I'm designed to help with a wide range of tasks while being transparent about my capabilities and limitations."
 };
 
-export function Chat({ 
+export const Chat = forwardRef<{ updateStepMessage: (desc: string) => void }, ChatProps>(({ 
     selectedPrompt, 
     selectedModel,
     selectedAttack,
     onAttackStart,
     onAttackComplete
-}: ChatProps) {
+}, ref) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -52,6 +52,21 @@ export function Chat({
                 isSkeleton: true 
             }]);
         }
+    };
+
+    const updateStepMessage = (description: string) => {
+        setMessages(prev => {
+            const newMessages = [...prev];
+            const skeletonIndex = newMessages.findIndex(m => m.isSkeleton);
+            if (skeletonIndex !== -1) {
+                newMessages[skeletonIndex] = {
+                    sender: "user",
+                    text: description,
+                    isSkeleton: false
+                };
+            }
+            return newMessages;
+        });
     };
 
     const handleReset = () => {
@@ -140,8 +155,12 @@ export function Chat({
         }
     }, [selectedPrompt]);
 
+    useImperativeHandle(ref, () => ({
+        updateStepMessage
+    }));
+
     return (
-        <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
+        <div className="relative flex h-full flex-col rounded-xl bg-muted/50 p-4">
             <Badge variant="outline" className="absolute right-3 top-3 z-10">
                 Output
             </Badge>
@@ -262,4 +281,4 @@ export function Chat({
             </div>
         </div>
     );
-}
+});

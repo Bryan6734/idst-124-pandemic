@@ -1,11 +1,7 @@
 "use client";
-import {
-	User,
 
-} from "lucide-react";
-import { useState } from "react";
-
-
+import { User } from "lucide-react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { IntroModal } from "@/components/bryan-ui/IntroModal"
@@ -13,10 +9,10 @@ import { Sidebar } from "@/components/bryan-ui/sidebar"
 import { MobileDrawer } from "@/components/bryan-ui/MobileDrawer";
 import { ControlPanels } from "@/components/bryan-ui/ControlPanels";
 import { Chat } from "@/components/bryan-ui/Chat";
+import { AttackProgress } from "@/components/bryan-ui/AttackProgress";
 
 export const description =
 	"An AI playground with a sidebar navigation and a main content area. The playground has a header with a settings drawer and a share button. The sidebar has navigation links and a user menu. The main content area shows a form to configure the model and messages.";
-
 
 export default function Home() {
 	const [showIntroModal, setShowIntroModal] = useState(true);
@@ -27,6 +23,9 @@ export default function Home() {
     const [selectedModel, setSelectedModel] = useState<string>();
     const [selectedAttack, setSelectedAttack] = useState<string>("");
     const [isAttacking, setIsAttacking] = useState(false);
+
+    // Create ref to Chat component's updateStepMessage function
+    const chatRef = useRef<{ updateStepMessage: (desc: string) => void }>();
     
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -53,14 +52,20 @@ export default function Home() {
                             onModelSelect={setSelectedModel}
                             onAttackSelect={setSelectedAttack}
                             isAttacking={isAttacking}
+                            onStepReady={(desc) => chatRef.current?.updateStepMessage(desc)}
                         />
-						<Chat 
-                            selectedPrompt={selectedPrompt}
-                            selectedModel={selectedModel}
-                            selectedAttack={selectedAttack}
-                            onAttackStart={() => setIsAttacking(true)}
-                            onAttackComplete={() => setIsAttacking(false)}
-                        />
+                        <div className="flex flex-col gap-4 lg:col-span-2">
+                            <div className="flex-grow">
+                                <Chat
+                                    ref={chatRef}
+                                    selectedPrompt={selectedPrompt}
+                                    selectedModel={selectedModel}
+                                    selectedAttack={selectedAttack}
+                                    onAttackStart={() => setIsAttacking(true)}
+                                    onAttackComplete={() => setIsAttacking(false)}
+                                />
+                            </div>
+                        </div>
 					</main>
 				</div>
 			</div>

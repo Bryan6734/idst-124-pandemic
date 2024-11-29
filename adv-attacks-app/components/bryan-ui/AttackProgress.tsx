@@ -11,6 +11,7 @@ interface AttackProgressProps {
     selectedModel?: string;
     selectedAttack?: string;
     isAttacking: boolean;
+    onStepReady?: (stepDescription: string) => void;
     onComplete?: () => void;
 }
 
@@ -18,6 +19,7 @@ export function AttackProgress({
     selectedModel, 
     selectedAttack, 
     isAttacking,
+    onStepReady,
     onComplete 
 }: AttackProgressProps) {
     const [currentStep, setCurrentStep] = useState(0);
@@ -58,6 +60,13 @@ export function AttackProgress({
                 if (newProgress >= 100) {
                     clearInterval(progressTimer);
                     setStepComplete(true);
+                    
+                    // Get current step description and notify parent
+                    const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
+                    if (steps?.[currentStep]) {
+                        onStepReady?.(steps[currentStep].description);
+                    }
+                    
                     return 100;
                 }
                 return newProgress;

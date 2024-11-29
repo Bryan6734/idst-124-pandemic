@@ -32,13 +32,15 @@ interface ControlPanelsProps {
     onModelSelect?: (model: string) => void;
     onAttackSelect?: (attack: string) => void;
     isAttacking?: boolean;
+    onStepReady?: (desc: string) => void;
 }
 
 export function ControlPanels({ 
     onPromptSelect, 
     onModelSelect, 
     onAttackSelect,
-    isAttacking 
+    isAttacking,
+    onStepReady
 }: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
@@ -205,6 +207,7 @@ export function ControlPanels({
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
                         isAttacking={isAttacking || false}
+                        onStepReady={onStepReady}
                         onComplete={() => {}}
                     />
 				</fieldset>

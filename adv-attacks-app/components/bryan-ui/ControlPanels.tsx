@@ -25,7 +25,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function ControlPanels() {
+interface ControlPanelsProps {
+    onPromptSelect?: (prompt: string) => void;
+    onModelSelect?: (model: string) => void;
+}
+
+export function ControlPanels({ onPromptSelect, onModelSelect }: ControlPanelsProps) {
 	return (
 		<div className="relative hidden flex-col items-start gap-8 md:flex" x-chunk="dashboard-03-chunk-0">
 			<form className="grid w-full items-start gap-6">
@@ -33,12 +38,14 @@ export function ControlPanels() {
 					<legend className="-ml-1 px-1 text-sm font-medium">Control Panel</legend>
 					<div className="grid gap-3">
 						<Label htmlFor="model">Victim Model</Label>
-						<Select onValueChange={(value) => {}}>
+						<Select onValueChange={(value) => {
+                                    onModelSelect?.(value);
+                                }}>
 							<SelectTrigger id="model" className="items-start truncate [&_[data-description]]:hidden">
 								<SelectValue placeholder="Select a model" />
 							</SelectTrigger>
 							<SelectContent className="w-[--radix-select-trigger-width]">
-								<SelectItem value="genesis">
+								<SelectItem value="gpt4">
 									<div className="flex items-start gap-3 text-muted-foreground overflow-hidden">
 										<Rabbit className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5 min-w-0">
@@ -51,7 +58,7 @@ export function ControlPanels() {
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="explorer">
+								<SelectItem value="claude">
 									<div className="flex items-start gap-3 text-muted-foreground overflow-hidden">
 										<Bird className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5 min-w-0">
@@ -64,7 +71,7 @@ export function ControlPanels() {
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="quantum">
+								<SelectItem value="llama">
 									<div className="flex items-start gap-3 text-muted-foreground overflow-hidden">
 										<Turtle className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5 min-w-0">
@@ -149,7 +156,9 @@ export function ControlPanels() {
 
 					<div className="grid gap-3">
 						<Label htmlFor="prompt">Prompt</Label>
-						<Select onValueChange={(value) => {}}>
+						<Select onValueChange={(value) => {
+                                    onPromptSelect?.(value);
+                                }}>
 							<SelectTrigger id="prompt" className="items-start whitespace-nowrap overflow-hidden [&_[data-description]]:hidden">
 								<SelectValue className="truncate text-left" placeholder="Select a prompt" />
 							</SelectTrigger>

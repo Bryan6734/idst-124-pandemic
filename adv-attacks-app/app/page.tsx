@@ -23,7 +23,8 @@ export default function Home() {
 	
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
-
+    const [selectedPrompt, setSelectedPrompt] = useState<string>();
+    const [selectedModel, setSelectedModel] = useState<string>();
     
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -43,8 +44,14 @@ export default function Home() {
 						</Button>
 					</header>
 					<main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
-						<ControlPanels/>
-						<Chat/>
+						<ControlPanels 
+                            onPromptSelect={setSelectedPrompt}
+                            onModelSelect={setSelectedModel}
+                        />
+						<Chat 
+                            selectedPrompt={selectedPrompt}
+                            selectedModel={selectedModel}
+                        />
 					</main>
 				</div>
 			</div>

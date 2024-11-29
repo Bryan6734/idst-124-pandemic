@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -50,8 +49,18 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 	};
 
     return (
-        <Dialog open={showIntroModal} onOpenChange={setShowIntroModal}>
-				<DialogContent className="sm:max-w-[500px] overflow-hidden">
+        <Dialog 
+            open={showIntroModal} 
+            onOpenChange={setShowIntroModal} 
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            className="focus:none [&_*]:!outline-none [&_*]:!ring-0 [&_button]:!ring-0 [&_button]:!outline-none"
+        >
+				<DialogContent 
+                    className="sm:max-w-[500px] overflow-hidden !outline-none !ring-0 [&_*]:!outline-none [&_*]:!ring-0 [&_*]:focus:!outline-none [&_*]:focus-visible:!outline-none [&_*]:focus-visible:!ring-0 [&_button]:!ring-offset-0"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                    onEscapeKeyDown={(e) => e.preventDefault()}
+                    style={{ outline: 'none' }}
+                >
 					<AnimatePresence mode="wait">
 						<motion.div
 							key={currentStep}
@@ -89,7 +98,13 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 							</motion.div>
 							<motion.div>
 								<div className="flex items-center justify-between">
-									<Button variant="outline" onClick={handleBack} disabled={currentStep === 0}>
+									<Button 
+                                        variant="outline" 
+                                        onClick={handleBack} 
+                                        disabled={currentStep === 0}
+                                        className="!outline-none !ring-0 !ring-offset-0 hover:!ring-0 focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0"
+                                        style={{ outline: 'none' }}
+                                    >
 										<ChevronLeft className="mr-2 h-4 w-4" />
 										Back
 									</Button>
@@ -101,7 +116,12 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 											/>
 										))}
 									</div>
-									<Button onClick={handleNext}>
+									<Button 
+                                        variant="outline" 
+                                        onClick={handleNext}
+                                        className="!outline-none !ring-0 !ring-offset-0 hover:!ring-0 focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0"
+                                        style={{ outline: 'none' }}
+                                    >
 										{currentStep === introSteps.length - 1 ? (
 											"Get Started"
 										) : (

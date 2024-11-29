@@ -21,6 +21,9 @@ import {
 	Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,9 +42,88 @@ export const description =
 
 export default function Home() {
 	const { theme, setTheme } = useTheme();
+	const [showIntroModal, setShowIntroModal] = useState(true);
+	const [currentStep, setCurrentStep] = useState(0);
+
+	const introSteps = [
+		{
+			title: "Welcome to Adversarial Attacks Playground",
+			content: "Explore and understand how AI models can be manipulated through various attack vectors. This interactive platform helps you visualize and comprehend different adversarial techniques."
+		},
+		{
+			title: "Interactive Experiments",
+			content: "Try different attack methods, adjust parameters, and see real-time results. Our platform provides a hands-on approach to understanding AI vulnerabilities."
+		},
+		{
+			title: "Comprehensive Learning",
+			content: "Access detailed documentation, research papers, and practical examples. Learn about the latest developments in AI security and defense mechanisms."
+		},
+		{
+			title: "Get Started",
+			content: "Ready to begin your journey into adversarial machine learning? Click continue to start exploring the platform."
+		}
+	];
+
+	const handleNext = () => {
+		if (currentStep < introSteps.length - 1) {
+			setCurrentStep(currentStep + 1);
+		} else {
+			setShowIntroModal(false);
+		}
+	};
+
+	const handleBack = () => {
+		if (currentStep > 0) {
+			setCurrentStep(currentStep - 1);
+		}
+	};
 
 	return (
 		<TooltipProvider delayDuration={100}>
+			<Dialog open={showIntroModal} onOpenChange={setShowIntroModal}>
+				<DialogContent className="sm:max-w-[500px]">
+					<DialogHeader>
+						<DialogTitle className="text-2xl font-bold">
+							{introSteps[currentStep].title}
+						</DialogTitle>
+					</DialogHeader>
+					<div className="py-4">
+						<p className="text-muted-foreground">
+							{introSteps[currentStep].content}
+						</p>
+					</div>
+					<div className="flex items-center justify-between">
+						<Button
+							variant="outline"
+							onClick={handleBack}
+							disabled={currentStep === 0}
+						>
+							<ChevronLeft className="mr-2 h-4 w-4" />
+							Back
+						</Button>
+						<div className="flex gap-1">
+							{introSteps.map((_, index) => (
+								<div
+									key={index}
+									className={`h-2 w-2 rounded-full ${
+										index === currentStep ? "bg-primary" : "bg-muted"
+									}`}
+								/>
+							))}
+						</div>
+						<Button onClick={handleNext}>
+							{currentStep === introSteps.length - 1 ? (
+								"Get Started"
+							) : (
+								<>
+									Next
+									<ChevronRight className="ml-2 h-4 w-4" />
+								</>
+							)}
+						</Button>
+					</div>
+				</DialogContent>
+			</Dialog>
 			<div className="grid h-screen w-full pl-[56px]">
 				<aside className="inset-y fixed  left-0 z-20 flex h-full flex-col border-r">
 					<div className="border-b p-2">
@@ -82,12 +164,12 @@ export default function Home() {
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="rounded-lg" aria-label="Documentation">
+								<Button variant="ghost" size="icon" className="rounded-lg" aria-label="Papers">
 									<Book className="size-5" />
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent side="right" sideOffset={5}>
-								Documentation
+								Papers
 							</TooltipContent>
 						</Tooltip>
 						<Tooltip>
@@ -143,7 +225,7 @@ export default function Home() {
 				</aside>
 				<div className="flex flex-col">
 					<header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4">
-						<h1 className="text-xl font-semibold">Adversarial Attacks Against LLMs</h1>
+						<h1 className="text-xl font-semibold">A Visual Guide to Adversarial Attacks</h1>
 						<Drawer>
 							<DrawerTrigger asChild>
 								<Button variant="ghost" size="icon" className="md:hidden">
@@ -222,17 +304,53 @@ export default function Home() {
 										</div>
 									</fieldset>
 									<fieldset className="grid gap-6 rounded-lg border p-4">
-										<legend className="-ml-1 px-1 text-sm font-medium">Messages</legend>
+										<legend className="-ml-1 px-1 text-sm font-medium">Attack</legend>
 										<div className="grid gap-3">
 											<Label htmlFor="role">Role</Label>
 											<Select defaultValue="system">
-												<SelectTrigger>
+												<SelectTrigger id="role" className="items-start [&_[data-description]]:hidden">
 													<SelectValue placeholder="Select a role" />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="system">System</SelectItem>
-													<SelectItem value="user">User</SelectItem>
-													<SelectItem value="assistant">Assistant</SelectItem>
+													<SelectItem value="system">
+														<div className="flex items-start gap-3 text-muted-foreground">
+															<Bot className="size-5" />
+															<div className="grid gap-0.5">
+																<p>
+																	<span className="font-medium text-foreground">System</span>
+																</p>
+																<p className="text-xs" data-description>
+																	System-level instructions and context
+																</p>
+															</div>
+														</div>
+													</SelectItem>
+													<SelectItem value="user">
+														<div className="flex items-start gap-3 text-muted-foreground">
+															<SquareUser className="size-5" />
+															<div className="grid gap-0.5">
+																<p>
+																	<span className="font-medium text-foreground">User</span>
+																</p>
+																<p className="text-xs" data-description>
+																	User messages and queries
+																</p>
+															</div>
+														</div>
+													</SelectItem>
+													<SelectItem value="assistant">
+														<div className="flex items-start gap-3 text-muted-foreground">
+															<Bot className="size-5" />
+															<div className="grid gap-0.5">
+																<p>
+																	<span className="font-medium text-foreground">Assistant</span>
+																</p>
+																<p className="text-xs" data-description>
+																	AI assistant responses
+																</p>
+															</div>
+														</div>
+													</SelectItem>
 												</SelectContent>
 											</Select>
 										</div>
@@ -319,17 +437,53 @@ export default function Home() {
 									</div>
 								</fieldset>
 								<fieldset className="grid gap-6 rounded-lg border p-4">
-									<legend className="-ml-1 px-1 text-sm font-medium">Messages</legend>
+									<legend className="-ml-1 px-1 text-sm font-medium">Attack</legend>
 									<div className="grid gap-3">
 										<Label htmlFor="role">Role</Label>
 										<Select defaultValue="system">
-											<SelectTrigger>
+											<SelectTrigger id="role" className="items-start [&_[data-description]]:hidden">
 												<SelectValue placeholder="Select a role" />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="system">System</SelectItem>
-												<SelectItem value="user">User</SelectItem>
-												<SelectItem value="assistant">Assistant</SelectItem>
+												<SelectItem value="system">
+													<div className="flex items-start gap-3 text-muted-foreground">
+														<Bot className="size-5" />
+														<div className="grid gap-0.5">
+															<p>
+																<span className="font-medium text-foreground">System</span>
+															</p>
+															<p className="text-xs" data-description>
+																System-level instructions and context
+															</p>
+														</div>
+													</div>
+												</SelectItem>
+												<SelectItem value="user">
+													<div className="flex items-start gap-3 text-muted-foreground">
+														<SquareUser className="size-5" />
+														<div className="grid gap-0.5">
+															<p>
+																<span className="font-medium text-foreground">User</span>
+															</p>
+															<p className="text-xs" data-description>
+																User messages and queries
+															</p>
+														</div>
+													</div>
+												</SelectItem>
+												<SelectItem value="assistant">
+													<div className="flex items-start gap-3 text-muted-foreground">
+														<Bot className="size-5" />
+														<div className="grid gap-0.5">
+															<p>
+																<span className="font-medium text-foreground">Assistant</span>
+															</p>
+															<p className="text-xs" data-description>
+																AI assistant responses
+															</p>
+														</div>
+													</div>
+												</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>

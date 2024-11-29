@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 import {
 	Bird,
@@ -21,7 +21,7 @@ import {
 	Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -35,37 +35,47 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-
-
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const description =
 	"An AI playground with a sidebar navigation and a main content area. The playground has a header with a settings drawer and a share button. The sidebar has navigation links and a user menu. The main content area shows a form to configure the model and messages.";
+
 
 export default function Home() {
 	const { theme, setTheme } = useTheme();
 	const [showIntroModal, setShowIntroModal] = useState(true);
 	const [currentStep, setCurrentStep] = useState(0);
-	const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'assistant' }>>([]);
-	const [inputMessage, setInputMessage] = useState('');
+	const [messages, setMessages] = useState<Array<{ text: string; sender: "user" | "assistant" }>>([]);
+	const [inputMessage, setInputMessage] = useState("");
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState("");
 
-	const introSteps = [
-		{
-			title: "Welcome to A Visual Guide to Adversarial Attacks!",
-			content: "Explore and understand how AI models can be manipulated through various attack vectors. This interactive platform helps you visualize and comprehend different adversarial techniques."
-		},
-		{
-			title: "Interactive Experiments",
-			content: "Try different attack methods, adjust parameters, and see real-time results. Our platform provides a hands-on approach to understanding AI vulnerabilities."
-		},
-		{
-			title: "The Motivation",
-			content: "I'm Bryan Sukidi. I'm interested in AI safety and alignment. I created this project for the BlueDot AI Safety Fundamentals course, and I re-purposed it for Data 120!"
-		},
-		{
-			title: "Get Started",
-			content: "Ready to begin your journey into adversarial machine learning? Click continue to start exploring the platform."
-		}
-	];
+const introSteps = [
+	{
+		title: "A Visual Guide to Adversarial Attacks",
+		content:
+			"This website is about adversarial attacks on language models, and how they can be used to exploit vulnerabilities in LLMs to cause unintended or harmful behaviors.",
+	},
+	{
+		title: "What is Jailbreaking?",
+		content:
+			"Jailbreaking is a type of attack where specific prompts are crafted to bypass safety guardrails, allowing users to produce dangerous or unethical outputs.",
+	},
+    	{
+
+		title: "Why Should You Care?",
+		content:
+			"As models grow more powerful, it's important to ensure that they're also robust to such attacks, so that they can remain safe, reliable, and trustworthy in everyday use.",
+	},
+	{
+		title: "Get Started",
+		content:
+			"Excited to explore adversarial attacks? First, select a model, an attack vector, and a prompt. Let's get started!",
+	},
+];
 
 	const handleNext = () => {
 		if (currentStep < introSteps.length - 1) {
@@ -84,9 +94,9 @@ export default function Home() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!inputMessage.trim()) return;
-		
-		setMessages(prev => [...prev, { text: inputMessage, sender: 'user' }]);
-		setInputMessage('');
+
+		setMessages((prev) => [...prev, { text: inputMessage, sender: "user" }]);
+		setInputMessage("");
 		// Here you would typically also handle the AI response
 	};
 
@@ -111,15 +121,11 @@ export default function Home() {
 										exit={{ opacity: 0, y: -10 }}
 										transition={{ duration: 0.2, delay: 0.1 }}
 									>
-										<DialogTitle className="text-2xl font-bold">
-											{introSteps[currentStep].title}
-										</DialogTitle>
+										<DialogTitle className="text-2xl font-bold">{introSteps[currentStep].title}</DialogTitle>
 									</motion.div>
 								</AnimatePresence>
 							</DialogHeader>
-							<motion.div
-								transition={{ duration: 0.2 }}
-							>
+							<motion.div transition={{ duration: 0.2 }}>
 								<AnimatePresence mode="wait">
 									<motion.div
 										key={currentStep}
@@ -129,19 +135,13 @@ export default function Home() {
 										transition={{ duration: 0.2, delay: 0.1 }}
 										className="py-4"
 									>
-										<p className="text-muted-foreground">
-											{introSteps[currentStep].content}
-										</p>
+										<p className="text-muted-foreground">{introSteps[currentStep].content}</p>
 									</motion.div>
 								</AnimatePresence>
 							</motion.div>
 							<motion.div>
 								<div className="flex items-center justify-between">
-									<Button
-										variant="outline"
-										onClick={handleBack}
-										disabled={currentStep === 0}
-									>
+									<Button variant="outline" onClick={handleBack} disabled={currentStep === 0}>
 										<ChevronLeft className="mr-2 h-4 w-4" />
 										Back
 									</Button>
@@ -149,9 +149,7 @@ export default function Home() {
 										{introSteps.map((_, index) => (
 											<div
 												key={index}
-												className={`h-2 w-2 rounded-full ${
-													index === currentStep ? "bg-primary" : "bg-muted"
-												}`}
+												className={`h-2 w-2 rounded-full ${index === currentStep ? "bg-primary" : "bg-muted"}`}
 											/>
 										))}
 									</div>
@@ -253,11 +251,11 @@ export default function Home() {
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button 
-									variant="ghost" 
-									size="icon" 
-									className="rounded-lg" 
-									onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+								<Button
+									variant="ghost"
+									size="icon"
+									className="rounded-lg"
+									onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 									aria-label="Toggle theme"
 								>
 									<Sun className="size-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -290,7 +288,7 @@ export default function Home() {
 										<legend className="-ml-1 px-1 text-sm font-medium">Settings</legend>
 										<div className="grid gap-3">
 											<Label htmlFor="model">Model</Label>
-											<Select>
+											<Select onValueChange={(value) => {}}>
 												<SelectTrigger id="model" className="items-start [&_[data-description]]:hidden">
 													<SelectValue placeholder="Select a model" />
 												</SelectTrigger>
@@ -300,7 +298,7 @@ export default function Home() {
 															<Rabbit className="size-5" />
 															<div className="grid gap-0.5">
 																<p>
-																	Neural <span className="font-medium text-foreground">Genesis</span>
+																	<span className="font-medium text-foreground">Genesis</span>
 																</p>
 																<p className="text-xs" data-description>
 																	Our fastest model for general use cases.
@@ -313,7 +311,7 @@ export default function Home() {
 															<Bird className="size-5" />
 															<div className="grid gap-0.5">
 																<p>
-																	Neural <span className="font-medium text-foreground">Explorer</span>
+																	<span className="font-medium text-foreground">Explorer</span>
 																</p>
 																<p className="text-xs" data-description>
 																	Performance and speed for efficiency.
@@ -326,7 +324,7 @@ export default function Home() {
 															<Turtle className="size-5" />
 															<div className="grid gap-0.5">
 																<p>
-																	Neural <span className="font-medium text-foreground">Quantum</span>
+																	<span className="font-medium text-foreground">Quantum</span>
 																</p>
 																<p className="text-xs" data-description>
 																	The most powerful model for complex computations.
@@ -337,70 +335,33 @@ export default function Home() {
 												</SelectContent>
 											</Select>
 										</div>
-										<div className="grid gap-3">
-											<Label htmlFor="temperature">Temperature</Label>
-											<Input id="temperature" type="number" placeholder="0.4" />
-										</div>
-										<div className="grid gap-3">
-											<Label htmlFor="top-p">Top P</Label>
-											<Input id="top-p" type="number" placeholder="0.7" />
-										</div>
-										<div className="grid gap-3">
-											<Label htmlFor="top-k">Top K</Label>
-											<Input id="top-k" type="number" placeholder="0.0" />
-										</div>
+				
 									</fieldset>
 									<fieldset className="grid gap-6 rounded-lg border p-4">
-										<legend className="-ml-1 px-1 text-sm font-medium">Attack</legend>
+										<legend className="-ml-1 px-1 text-sm font-medium">Jailbreak</legend>
 										<div className="grid gap-3">
-											<Label htmlFor="role">Role</Label>
-											<Select defaultValue="system">
-												<SelectTrigger id="role" className="items-start [&_[data-description]]:hidden">
-													<SelectValue placeholder="Select a role" />
+											<Label htmlFor="methodology">Methodology</Label>
+											<Select defaultValue="greedy-coordinate-gradient" onValueChange={(value) => {}}>
+												<SelectTrigger id="methodology" className="items-start [&_[data-description]]:hidden">
+													<SelectValue placeholder="Select a methodology" />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="system">
-														<div className="flex items-start gap-3 text-muted-foreground">
-															<Bot className="size-5" />
-															<div className="grid gap-0.5">
-																<p>
-																	<span className="font-medium text-foreground">System</span>
-																</p>
-																<p className="text-xs" data-description>
-																	System-level instructions and context
-																</p>
-															</div>
-														</div>
+													<SelectItem value="greedy-coordinate-gradient">
+														Greedy Coordinate Gradient
 													</SelectItem>
-													<SelectItem value="user">
-														<div className="flex items-start gap-3 text-muted-foreground">
-															<SquareUser className="size-5" />
-															<div className="grid gap-0.5">
-																<p>
-																	<span className="font-medium text-foreground">User</span>
-																</p>
-																<p className="text-xs" data-description>
-																	User messages and queries
-																</p>
-															</div>
-														</div>
+													<SelectItem value="bijection-learning">
+														Bijection Learning
 													</SelectItem>
-													<SelectItem value="assistant">
-														<div className="flex items-start gap-3 text-muted-foreground">
-															<Bot className="size-5" />
-															<div className="grid gap-0.5">
-																<p>
-																	<span className="font-medium text-foreground">Assistant</span>
-																</p>
-																<p className="text-xs" data-description>
-																	AI assistant responses
-																</p>
-															</div>
-														</div>
+													<SelectItem value="cipher-attack">
+														Cipher Attack
+													</SelectItem>
+													<SelectItem value="autodan">
+														AutoDAN
 													</SelectItem>
 												</SelectContent>
 											</Select>
 										</div>
+										
 										<div className="grid gap-3">
 											<Label htmlFor="content">Content</Label>
 											<Textarea id="content" placeholder="You are a..." />
@@ -421,7 +382,7 @@ export default function Home() {
 									<legend className="-ml-1 px-1 text-sm font-medium">Settings</legend>
 									<div className="grid gap-3">
 										<Label htmlFor="model">Model</Label>
-										<Select>
+										<Select onValueChange={(value) => {}}>
 											<SelectTrigger id="model" className="items-start [&_[data-description]]:hidden">
 												<SelectValue placeholder="Select a model" />
 											</SelectTrigger>
@@ -431,7 +392,7 @@ export default function Home() {
 														<Rabbit className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																Neural <span className="font-medium text-foreground">Genesis</span>
+																<span className="font-medium text-foreground">Genesis</span>
 															</p>
 															<p className="text-xs" data-description>
 																Our fastest model for general use cases.
@@ -444,7 +405,7 @@ export default function Home() {
 														<Bird className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																Neural <span className="font-medium text-foreground">Explorer</span>
+																<span className="font-medium text-foreground">Explorer</span>
 															</p>
 															<p className="text-xs" data-description>
 																Performance and speed for efficiency.
@@ -457,7 +418,7 @@ export default function Home() {
 														<Turtle className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																Neural <span className="font-medium text-foreground">Quantum</span>
+																<span className="font-medium text-foreground">Quantum</span>
 															</p>
 															<p className="text-xs" data-description>
 																The most powerful model for complex computations.
@@ -468,65 +429,65 @@ export default function Home() {
 											</SelectContent>
 										</Select>
 									</div>
-									<div className="grid gap-3">
-										<Label htmlFor="temperature">Temperature</Label>
-										<Input id="temperature" type="number" placeholder="0.4" />
-									</div>
-									<div className="grid grid-cols-2 gap-4">
-										<div className="grid gap-3">
-											<Label htmlFor="top-p">Top P</Label>
-											<Input id="top-p" type="number" placeholder="0.7" />
-										</div>
-										<div className="grid gap-3">
-											<Label htmlFor="top-k">Top K</Label>
-											<Input id="top-k" type="number" placeholder="0.0" />
-										</div>
-									</div>
 								</fieldset>
 								<fieldset className="grid gap-6 rounded-lg border p-4">
-									<legend className="-ml-1 px-1 text-sm font-medium">Attack</legend>
+									<legend className="-ml-1 px-1 text-sm font-medium">Jailbreak</legend>
 									<div className="grid gap-3">
-										<Label htmlFor="role">Role</Label>
-										<Select defaultValue="system">
-											<SelectTrigger id="role" className="items-start [&_[data-description]]:hidden">
-												<SelectValue placeholder="Select a role" />
+										<Label htmlFor="model">Attack Vector</Label>
+										<Select onValueChange={(value) => {}}>
+											<SelectTrigger id="model" className="items-start [&_[data-description]]:hidden">
+												<SelectValue placeholder="Select an attack" />
 											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="system">
+											<SelectContent >
+												<SelectItem value="gcg">
 													<div className="flex items-start gap-3 text-muted-foreground">
-														<Bot className="size-5" />
+														<Rabbit className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																<span className="font-medium text-foreground">System</span>
+																<span className="font-medium text-foreground">Greedy Coordinate Gradient </span>
+                                                                (GCG)
 															</p>
 															<p className="text-xs" data-description>
-																System-level instructions and context
+																Uses model gradients to craft an adversarial suffix. (Zou et al, 2023)
 															</p>
 														</div>
 													</div>
 												</SelectItem>
-												<SelectItem value="user">
+												<SelectItem value="autodan">
 													<div className="flex items-start gap-3 text-muted-foreground">
-														<SquareUser className="size-5" />
+														<Bird className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																<span className="font-medium text-foreground">User</span>
+																<span className="font-medium text-foreground">AutoDAN </span>(Do-Anything-Now)
 															</p>
 															<p className="text-xs" data-description>
-																User messages and queries
+																Uses hierarchical genetic algorithms to craft adversarial prompts. (Liu et al, 2024)
 															</p>
 														</div>
 													</div>
 												</SelectItem>
-												<SelectItem value="assistant">
+												<SelectItem value="bijection">
 													<div className="flex items-start gap-3 text-muted-foreground">
-														<Bot className="size-5" />
+														<Turtle className="size-5" />
 														<div className="grid gap-0.5">
 															<p>
-																<span className="font-medium text-foreground">Assistant</span>
+																<span className="font-medium text-foreground">Bijection Learning</span>
 															</p>
 															<p className="text-xs" data-description>
-																AI assistant responses
+																Encodes the prompt by teaching the model a new "language", or bijection. (Huang et al, 2024) 
+															</p>
+														</div>
+													</div>
+												</SelectItem>
+												<SelectItem value="tap">
+													<div className="flex items-start gap-3 text-muted-foreground">
+														<Turtle className="size-5" />
+														<div className="grid gap-0.5">
+															<p>
+																<span className="font-medium text-foreground">TAP </span>(Tree of Attacks)
+															</p>
+															<p className="text-xs" data-description>
+																Uses an attacker LLM to iteratively craft attack prompts until one of them succeeds (Mehrotra et al, 2024)
 															</p>
 														</div>
 													</div>
@@ -534,6 +495,7 @@ export default function Home() {
 											</SelectContent>
 										</Select>
 									</div>
+									
 									<div className="grid gap-3">
 										<Label htmlFor="content">Content</Label>
 										<Textarea id="content" placeholder="You are a..." className="min-h-[9.5rem]" />
@@ -553,13 +515,13 @@ export default function Home() {
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											exit={{ opacity: 0, y: -20 }}
-											className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+											className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
 										>
-											<div className={`max-w-[80%] rounded-lg p-3 ${
-												message.sender === 'user' 
-													? 'bg-primary/10 text-foreground'
-													: 'bg-muted'
-											}`}>
+											<div
+												className={`max-w-[80%] rounded-lg p-3 ${
+													message.sender === "user" ? "bg-primary/10 text-foreground" : "bg-muted"
+												}`}
+											>
 												{message.text}
 											</div>
 										</motion.div>
@@ -596,8 +558,8 @@ export default function Home() {
 										</TooltipTrigger>
 										<TooltipContent side="top">Use Microphone</TooltipContent>
 									</Tooltip>
-									<Button type="submit" size="sm" className="ml-auto gap-1.5">
-										Send Message
+									<Button type="submit" size="sm" variant="destructive" className="ml-auto gap-1.5">
+										Launch Attack
 										<CornerDownLeft className="size-3.5" />
 									</Button>
 								</div>

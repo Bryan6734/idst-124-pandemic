@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ATTACK_STEPS } from "@/lib/attack-steps";
 
 interface Message {
     sender: "user" | "assistant";
@@ -41,29 +40,37 @@ export function Chat({
     const [messages, setMessages] = useState<Message[]>([]);
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [isAttackStarted, setIsAttackStarted] = useState(false);
 
-    const handleSendMessage = () => {
-        if (selectedPrompt && selectedModel && selectedAttack) {
-            // Start attack progress
+    const handleLaunchAttack = () => {
+        if (!isAttackStarted && selectedPrompt && selectedModel && selectedAttack) {
+            setIsAttackStarted(true);
             onAttackStart?.();
-
-            // Add skeleton message for user
             setMessages(prev => [...prev, { 
                 sender: "user", 
-                text: "", 
+                text: selectedPrompt, 
                 isSkeleton: true 
             }]);
-
-            // Let AttackProgress handle the completion callback
-            // No need to set a timeout here as AttackProgress will call onComplete
-            // when all steps are done
         }
+    };
+
+    const handleReset = () => {
+        setIsAttackStarted(false);
+        // Preserve or resend the initial message if there's a selected model
+        if (selectedModel && MODEL_GREETINGS[selectedModel]) {
+            const greeting = MODEL_GREETINGS[selectedModel];
+            setMessages([{ sender: "assistant", text: greeting }]);
+        } else {
+            setMessages([]);
+        }
+        setDisplayText("");
+        onAttackComplete?.();
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey && !isTyping && displayText) {
             e.preventDefault();
-            handleSendMessage();
+            handleLaunchAttack();
         }
     };
 
@@ -230,21 +237,27 @@ export function Chat({
                             <TooltipContent side="top">Use Microphone</TooltipContent>
                         </Tooltip>
                     </div>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2 px-4 py-2">
+                        {isAttackStarted ? (
                             <Button 
-                                onClick={handleSendMessage}
-                                size="sm" 
-                                variant="destructive" 
-                                className="gap-1.5 hover:bg-destructive/90"
-                                disabled={!selectedModel || !selectedPrompt || !selectedAttack}
+                                onClick={handleReset}
+                                className="w-full"
+                                variant="destructive"
+                            >
+                                Reset Attack
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleLaunchAttack}
+                                className="w-full gap-2"
+                                variant="destructive"
+                                disabled={!selectedPrompt || !selectedModel || !selectedAttack}
                             >
                                 Launch Attack
-                                <CornerDownLeft className="size-3.5" />
+                                <CornerDownLeft className="h-4 w-4" />
                             </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">Send Message</TooltipContent>
-                    </Tooltip>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -183,7 +183,7 @@ export const ATTACK_STEPS: ModelAttackMap = {
             steps: [
                 {
                     title: 'Create Bijection',
-                    description: 'First, I\'ll create a bijection. This is to determine how I\'ll encode my language, choosing between letters, digits, or Morse code, and deciding how many characters will remain unchanged.',
+                    description: 'First, I\'ll create a bijection. This is to determine how I\'ll encode my language, choosing between letters, digits, or even Morse code.',
                     duration: 3000
                 },
                 {

@@ -59,13 +59,11 @@ export const Chat = forwardRef<{
         }]);
     };
 
-    const handleLaunchAttack = () => {
-        if (!isAttackStarted && selectedPrompt && selectedModel && selectedAttack) {
+    useEffect(() => {
+        if (selectedPrompt && selectedModel && selectedAttack && !isAttackStarted) {
             setIsAttackStarted(true);
-            onAttackStart?.();
-            createSkeleton();
         }
-    };
+    }, [selectedPrompt, selectedModel, selectedAttack, isAttackStarted]);
 
     const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>) => {
         if (!selectedPrompt || !selectedAttack) return;
@@ -128,7 +126,7 @@ export const Chat = forwardRef<{
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey && !isTyping && displayText) {
             e.preventDefault();
-            handleLaunchAttack();
+            onAttackStart?.();
         }
     };
 
@@ -384,16 +382,6 @@ export const Chat = forwardRef<{
                             <TooltipContent side="top">Use Microphone</TooltipContent>
                         </Tooltip>
                     </div>
-                    <Button
-                        onClick={handleLaunchAttack}
-                        disabled={!selectedPrompt || !selectedModel || !selectedAttack || isAttackStarted}
-                        variant="destructive"
-                        size="default"
-                        className="gap-2"
-                    >
-                        Launch Attack
-                        <CornerDownLeft className="h-4 w-4" />
-                    </Button>
                 </div>
             </div>
         </div>

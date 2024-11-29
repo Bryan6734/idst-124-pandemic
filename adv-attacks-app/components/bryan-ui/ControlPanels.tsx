@@ -20,6 +20,7 @@ import {
 	GitFork,
 	Moon,
 	Sun,
+	CornerDownLeft,
 } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ interface ControlPanelsProps {
     onModelSelect?: (model: string) => void;
     onAttackSelect?: (attack: string) => void;
     isAttacking?: boolean;
+    onAttackStart?: () => void;
     onStepReady?: (desc: string, step: number, bijection?: Record<string, string>) => void;
     onContinue?: () => void;
     onReset?: () => void;
@@ -43,6 +45,7 @@ export function ControlPanels({
     onModelSelect, 
     onAttackSelect,
     isAttacking,
+    onAttackStart,
     onStepReady,
     onContinue,
     onReset
@@ -63,6 +66,12 @@ export function ControlPanels({
     const handleReset = () => {
         resetSelections();
         onReset?.();
+    };
+
+    const handleLaunchAttack = () => {
+        if (!isAttacking && selectedPrompt && selectedModel && selectedAttack) {
+            onAttackStart?.();
+        }
     };
 
 	return (
@@ -242,15 +251,7 @@ export function ControlPanels({
                     />
                     <div className="flex gap-2 mt-4">
                         <Button 
-                            variant="secondary"
-                            className="flex-1"
-                            onClick={() => window.open("https://github.com/bryansukidi/adv-attacks", "_blank")}
-                            type="button"
-                        >
-                            Learn More
-                        </Button>
-                        <Button 
-                            variant="destructive" 
+                            variant="secondary" 
                             className="flex-1"
                             onClick={(e) => {
                                 e.preventDefault();
@@ -260,6 +261,27 @@ export function ControlPanels({
                         >
                             Reset
                         </Button>
+                        {!isAttacking ? (
+                            <Button 
+                                variant="destructive"
+                                className="flex-1 gap-2"
+                                onClick={handleLaunchAttack}
+                                disabled={!selectedPrompt || !selectedModel || !selectedAttack}
+                                type="button"
+                            >
+                                Launch Attack
+                                <CornerDownLeft className="h-4 w-4" />
+                            </Button>
+                        ) : (
+                            <Button 
+                                variant="default"
+                                className="flex-1"
+                                onClick={onContinue}
+                                type="button"
+                            >
+                                Continue
+                            </Button>
+                        )}
                     </div>
 				</fieldset>
 			</div>

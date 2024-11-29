@@ -83,6 +83,10 @@ export default function Home() {
                             onModelSelect={(value) => handleParameterChange(setSelectedModel, value)}
                             onAttackSelect={(value) => handleParameterChange(setSelectedAttack, value)}
                             isAttacking={isAttacking}
+                            onAttackStart={() => {
+                                setIsAttacking(true);
+                                chatRef.current?.createSkeleton();
+                            }}
                             onStepReady={(desc, step, bijection) => {
                                 if (!isAttacking) return; // Only process steps if attack is active
                                 chatRef.current?.updateStepMessage(desc, step, bijection);
@@ -100,7 +104,10 @@ export default function Home() {
                                     selectedPrompt={selectedPrompt}
                                     selectedModel={selectedModel}
                                     selectedAttack={selectedAttack}
-                                    onAttackStart={() => setIsAttacking(true)}
+                                    onAttackStart={() => {
+                                        setIsAttacking(true);
+                                        chatRef.current?.createSkeleton();
+                                    }}
                                     onAttackComplete={() => setIsAttacking(false)}
                                 />
                             </div>

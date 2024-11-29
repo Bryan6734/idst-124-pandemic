@@ -240,17 +240,27 @@ export function ControlPanels({
                         onComplete={() => {}}
                         onContinue={onContinue}
                     />
-                    <Button 
-                        variant="destructive" 
-                        className="w-full mt-4"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleReset();
-                        }}
-                        type="button"
-                    >
-                        Reset
-                    </Button>
+                    <div className="flex gap-2 mt-4">
+                        <Button 
+                            variant="secondary"
+                            className="flex-1"
+                            onClick={() => window.open("https://github.com/bryansukidi/adv-attacks", "_blank")}
+                            type="button"
+                        >
+                            Learn More
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            className="flex-1"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleReset();
+                            }}
+                            type="button"
+                        >
+                            Reset
+                        </Button>
+                    </div>
 				</fieldset>
 			</div>
 		</div>

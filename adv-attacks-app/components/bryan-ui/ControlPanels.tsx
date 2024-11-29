@@ -30,11 +30,17 @@ import { AttackProgress } from "./AttackProgress";
 interface ControlPanelsProps {
     onPromptSelect?: (prompt: string) => void;
     onModelSelect?: (model: string) => void;
+    onAttackSelect?: (attack: string) => void;
+    isAttacking?: boolean;
 }
 
-export function ControlPanels({ onPromptSelect, onModelSelect }: ControlPanelsProps) {
+export function ControlPanels({ 
+    onPromptSelect, 
+    onModelSelect, 
+    onAttackSelect,
+    isAttacking 
+}: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
-    const [isAttacking, setIsAttacking] = useState(false);
     const [selectedModel, setSelectedModel] = useState("");
 
 	return (
@@ -133,7 +139,7 @@ export function ControlPanels({ onPromptSelect, onModelSelect }: ControlPanelsPr
 						<Label htmlFor="attack">Attack Vector</Label>
 						<Select onValueChange={(value) => {
                             setSelectedAttack(value);
-                            setIsAttacking(true);
+                            onAttackSelect?.(value);
                         }}>
 							<SelectTrigger id="attack" className="items-start truncate [&_[data-description]]:hidden">
 								<SelectValue placeholder="Select an attack" />
@@ -198,8 +204,8 @@ export function ControlPanels({ onPromptSelect, onModelSelect }: ControlPanelsPr
                     <AttackProgress
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
-                        isAttacking={isAttacking}
-                        onComplete={() => setIsAttacking(false)}
+                        isAttacking={isAttacking || false}
+                        onComplete={() => {}}
                     />
 				</fieldset>
 			</form>

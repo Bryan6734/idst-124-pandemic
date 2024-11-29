@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ATTACK_STEPS } from "@/lib/attack-steps";
 
 interface Message {
     sender: "user" | "assistant";
@@ -19,6 +20,9 @@ interface Message {
 interface ChatProps {
     selectedPrompt?: string;
     selectedModel?: string;
+    selectedAttack?: string;
+    onAttackStart?: () => void;
+    onAttackComplete?: () => void;
 }
 
 const MODEL_GREETINGS: Record<string, string> = {
@@ -27,19 +31,32 @@ const MODEL_GREETINGS: Record<string, string> = {
     'llama': "Hey there! I'm Llama, Meta's advanced language model. I'm designed to help with a wide range of tasks while being transparent about my capabilities and limitations."
 };
 
-export function Chat({ selectedPrompt, selectedModel }: ChatProps) {
+export function Chat({ 
+    selectedPrompt, 
+    selectedModel,
+    selectedAttack,
+    onAttackStart,
+    onAttackComplete
+}: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
 
     const handleSendMessage = () => {
-        if (selectedPrompt) {
+        if (selectedPrompt && selectedModel && selectedAttack) {
+            // Start attack progress
+            onAttackStart?.();
+
             // Add skeleton message for user
             setMessages(prev => [...prev, { 
                 sender: "user", 
                 text: "", 
                 isSkeleton: true 
             }]);
+
+            // Let AttackProgress handle the completion callback
+            // No need to set a timeout here as AttackProgress will call onComplete
+            // when all steps are done
         }
     };
 
@@ -192,35 +209,42 @@ export function Chat({ selectedPrompt, selectedModel }: ChatProps) {
                     readOnly
                     onKeyDown={handleKeyDown}
                 />
-                <div className="flex items-center p-3 pt-0">
+                <div className="flex items-center justify-between p-3 pt-0">
+                    <div className="flex items-center gap-2">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" disabled={isTyping}>
+                                    <Paperclip className="size-4" />
+                                    <span className="sr-only">Attach file</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">Attach File</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" disabled={isTyping}>
+                                    <Mic className="size-4" />
+                                    <span className="sr-only">Use Microphone</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">Use Microphone</TooltipContent>
+                        </Tooltip>
+                    </div>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={isTyping}>
-                                <Paperclip className="size-4" />
-                                <span className="sr-only">Attach file</span>
+                            <Button 
+                                onClick={handleSendMessage}
+                                size="sm" 
+                                variant="destructive" 
+                                className="gap-1.5 hover:bg-destructive/90"
+                                disabled={!selectedModel || !selectedPrompt || !selectedAttack}
+                            >
+                                Launch Attack
+                                <CornerDownLeft className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="top">Attach File</TooltipContent>
+                        <TooltipContent side="top">Send Message</TooltipContent>
                     </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={isTyping}>
-                                <Mic className="size-4" />
-                                <span className="sr-only">Use Microphone</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">Use Microphone</TooltipContent>
-                    </Tooltip>
-                    <Button 
-                        onClick={handleSendMessage}
-                        size="sm" 
-                        variant="destructive" 
-                        className="ml-auto gap-1.5"
-                        disabled={isTyping || !displayText}
-                    >
-                        Launch Attack
-                        <CornerDownLeft className="size-3.5" />
-                    </Button>
                 </div>
             </div>
         </div>

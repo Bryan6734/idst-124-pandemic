@@ -25,6 +25,8 @@ export default function Home() {
     const [value, setValue] = useState("");
     const [selectedPrompt, setSelectedPrompt] = useState<string>();
     const [selectedModel, setSelectedModel] = useState<string>();
+    const [selectedAttack, setSelectedAttack] = useState<string>("");
+    const [isAttacking, setIsAttacking] = useState(false);
     
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -49,10 +51,15 @@ export default function Home() {
 						<ControlPanels 
                             onPromptSelect={setSelectedPrompt}
                             onModelSelect={setSelectedModel}
+                            onAttackSelect={setSelectedAttack}
+                            isAttacking={isAttacking}
                         />
 						<Chat 
                             selectedPrompt={selectedPrompt}
                             selectedModel={selectedModel}
+                            selectedAttack={selectedAttack}
+                            onAttackStart={() => setIsAttacking(true)}
+                            onAttackComplete={() => setIsAttacking(false)}
                         />
 					</main>
 				</div>

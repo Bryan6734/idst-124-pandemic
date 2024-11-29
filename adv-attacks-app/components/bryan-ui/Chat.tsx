@@ -35,6 +35,7 @@ export const Chat = forwardRef<{
     updateStepMessage: (desc: string, step: number, bijection?: Record<string, string>) => void;
     createSkeleton: () => void;
     resetChat: () => void;
+    killAnimations: () => void;
 }, ChatProps>(({ 
     selectedPrompt, 
     selectedModel,
@@ -48,6 +49,7 @@ export const Chat = forwardRef<{
     const [isAttackStarted, setIsAttackStarted] = useState(false);
     const [animationInterval, setAnimationInterval] = useState<NodeJS.Timeout | null>(null);
     const [isModelGreeting, setIsModelGreeting] = useState(false);
+    const [animationTimeouts, setAnimationTimeouts] = useState<NodeJS.Timeout[]>([]);
 
     const createSkeleton = () => {
         setMessages(prev => [...prev, { 
@@ -77,7 +79,7 @@ export const Chat = forwardRef<{
         });
 
         // Add user message after a brief delay to allow skeleton exit animation
-        setTimeout(() => {
+        const timeout1 = setTimeout(() => {
             setMessages(prev => [...prev, {
                 sender: "user",
                 text: stepMessages.userMessage,
@@ -89,33 +91,38 @@ export const Chat = forwardRef<{
             }]);
 
             // Animate AI message after delay
-            setTimeout(() => {
+            const timeout2 = setTimeout(() => {
                 let currentText = "";
-                animateText(stepMessages.aiMessage, (text) => {
-                    currentText = text;
-                    setMessages(prev => {
-                        const newMessages = [...prev];
-                        const lastMessage = newMessages[newMessages.length - 1];
-                        if (lastMessage && lastMessage.sender === "assistant") {
-                            lastMessage.text = currentText;
-                            lastMessage.isTyping = true;
-                        }
-                        return newMessages;
-                    });
-                }).then(() => {
-                    // Remove typing indicator when done
-                    setMessages(prev => {
-                        const newMessages = [...prev];
-                        const lastMessage = newMessages[newMessages.length - 1];
-                        if (lastMessage && lastMessage.sender === "assistant") {
-                            lastMessage.text = stepMessages.aiMessage;
-                            lastMessage.isTyping = false;
-                        }
-                        return newMessages;
-                    });
-                });
+                const interval = setInterval(() => {
+                    if (currentText.length < stepMessages.aiMessage.length) {
+                        currentText = stepMessages.aiMessage.slice(0, currentText.length + 1);
+                        setMessages(prev => {
+                            const newMessages = [...prev];
+                            const lastMessage = newMessages[newMessages.length - 1];
+                            if (lastMessage && lastMessage.sender === "assistant") {
+                                lastMessage.text = currentText;
+                                lastMessage.isTyping = true;
+                            }
+                            return newMessages;
+                        });
+                    } else {
+                        clearInterval(interval);
+                        setMessages(prev => {
+                            const newMessages = [...prev];
+                            const lastMessage = newMessages[newMessages.length - 1];
+                            if (lastMessage && lastMessage.sender === "assistant") {
+                                lastMessage.text = stepMessages.aiMessage;
+                                lastMessage.isTyping = false;
+                            }
+                            return newMessages;
+                        });
+                    }
+                }, 15);
+                setAnimationInterval(interval);
             }, 1000);
-        }, 100); // Brief delay for skeleton exit
+            setAnimationTimeouts(prev => [...prev, timeout2]);
+        }, 100);
+        setAnimationTimeouts(prev => [...prev, timeout1]);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -151,8 +158,15 @@ export const Chat = forwardRef<{
         setIsTyping(false);
     };
 
-    const resetChat = () => {
+    const killAnimations = () => {
         clearAnimations();
+        // Clear all pending timeouts
+        animationTimeouts.forEach(timeout => clearTimeout(timeout));
+        setAnimationTimeouts([]);
+    };
+
+    const resetChat = () => {
+        killAnimations();
         setMessages([]);
         setIsAttackStarted(false);
         setDisplayText("");
@@ -243,7 +257,8 @@ export const Chat = forwardRef<{
     useImperativeHandle(ref, () => ({
         updateStepMessage,
         createSkeleton,
-        resetChat
+        resetChat,
+        killAnimations
     }));
 
     return (

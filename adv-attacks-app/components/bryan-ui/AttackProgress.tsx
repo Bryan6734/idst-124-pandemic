@@ -30,6 +30,16 @@ export function AttackProgress({
     const [stepComplete, setStepComplete] = useState(false);
     const [currentBijection, setCurrentBijection] = useState<Record<string, string> | null>(null);
 
+    // Reset progress when attack is stopped
+    useEffect(() => {
+        if (!isAttacking) {
+            setCurrentStep(0);
+            setProgress(0);
+            setStepComplete(false);
+            setCurrentBijection(null);
+        }
+    }, [isAttacking]);
+
     useEffect(() => {
         if (isAttacking) {
             // Select a new bijection when attack starts

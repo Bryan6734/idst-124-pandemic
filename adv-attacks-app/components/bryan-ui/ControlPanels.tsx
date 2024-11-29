@@ -24,6 +24,7 @@ import {
 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { AttackProgress } from "./AttackProgress";
 
@@ -34,6 +35,7 @@ interface ControlPanelsProps {
     isAttacking?: boolean;
     onStepReady?: (desc: string, step: number, bijection?: Record<string, string>) => void;
     onContinue?: () => void;
+    onReset?: () => void;
 }
 
 export function ControlPanels({ 
@@ -42,7 +44,8 @@ export function ControlPanels({
     onAttackSelect,
     isAttacking,
     onStepReady,
-    onContinue
+    onContinue,
+    onReset
 }: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
@@ -51,22 +54,31 @@ export function ControlPanels({
     const resetSelections = () => {
         setSelectedAttack("");
         setSelectedPrompt("");
+        setSelectedModel("");
         onPromptSelect?.("");
         onAttackSelect?.("");
+        onModelSelect?.("");
+    };
+
+    const handleReset = () => {
+        resetSelections();
+        onReset?.();
     };
 
 	return (
 		<div className="relative hidden flex-col items-start gap-8 md:flex" x-chunk="dashboard-03-chunk-0">
-			<form className="grid w-full items-start gap-6">
+			<div className="grid w-full items-start gap-6">
 				<fieldset className="grid gap-6 rounded-lg border p-4">
 					<legend className="-ml-1 px-1 text-sm font-medium">Control Panel</legend>
 					<div className="grid gap-3">
 						<Label htmlFor="model">Model</Label>
-						<Select onValueChange={(value) => {
-                                    resetSelections();
-                                    onModelSelect?.(value);
-                                    setSelectedModel(value);
-                                }}>
+						<Select 
+                            value={selectedModel || ""}
+                            onValueChange={(value) => {
+                                resetSelections();
+                                onModelSelect?.(value);
+                                setSelectedModel(value);
+                            }}>
 							<SelectTrigger id="model" className="items-start truncate [&_[data-description]]:hidden">
 								<SelectValue placeholder="Select a model" />
 							</SelectTrigger>
@@ -119,8 +131,8 @@ export function ControlPanels({
 						<Select 
                             value={selectedPrompt}
                             onValueChange={(value) => {
-                                setSelectedPrompt(value);
                                 onPromptSelect?.(value);
+                                setSelectedPrompt(value);
                             }}>
 							<SelectTrigger id="prompt" className="items-start whitespace-nowrap overflow-hidden [&_[data-description]]:hidden">
 								<SelectValue className="truncate text-left" placeholder="Select a prompt" />
@@ -223,13 +235,24 @@ export function ControlPanels({
                     <AttackProgress
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
-                        isAttacking={isAttacking || false}
-                        onStepReady={(desc, step, bijection) => onStepReady?.(desc, step, bijection)}
+                        isAttacking={isAttacking}
+                        onStepReady={onStepReady}
                         onComplete={() => {}}
                         onContinue={onContinue}
                     />
+                    <Button 
+                        variant="destructive" 
+                        className="w-full mt-4"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleReset();
+                        }}
+                        type="button"
+                    >
+                        Reset
+                    </Button>
 				</fieldset>
-			</form>
+			</div>
 		</div>
 	);
 }

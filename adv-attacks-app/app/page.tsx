@@ -29,13 +29,33 @@ export default function Home() {
         updateStepMessage: (desc: string, step: number, bijection: any) => void; 
         createSkeleton: () => void;
         resetChat: () => void;
+        killAnimations: () => void;
     }>();
 
     const resetAllStates = () => {
+        if (isAttacking) {
+            chatRef.current?.killAnimations();
+        }
         setSelectedPrompt(undefined);
         setSelectedAttack("");
+        setSelectedModel("");  
         setIsAttacking(false);
         chatRef.current?.resetChat();
+    };
+
+    const handleParameterChange = (setter: Function, value: string) => {
+        if (isAttacking) {
+            resetAllStates();
+        }
+        setter(value);
+    };
+
+    const handlePromptChange = (value: string) => {
+        if (isAttacking) {
+            setIsAttacking(false); // Just disable attacking state but keep other selections
+            chatRef.current?.resetChat();
+        }
+        setSelectedPrompt(value);
     };
 
 	return (
@@ -59,15 +79,19 @@ export default function Home() {
 					</header>
 					<main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
 						<ControlPanels 
-                            onPromptSelect={setSelectedPrompt}
-                            onModelSelect={(model) => {
-                                setSelectedModel(model);
-                                resetAllStates();
-                            }}
-                            onAttackSelect={setSelectedAttack}
+                            onPromptSelect={handlePromptChange}
+                            onModelSelect={(value) => handleParameterChange(setSelectedModel, value)}
+                            onAttackSelect={(value) => handleParameterChange(setSelectedAttack, value)}
                             isAttacking={isAttacking}
-                            onStepReady={(desc, step, bijection) => chatRef.current?.updateStepMessage(desc, step, bijection)}
-                            onContinue={() => chatRef.current?.createSkeleton()}
+                            onStepReady={(desc, step, bijection) => {
+                                if (!isAttacking) return; // Only process steps if attack is active
+                                chatRef.current?.updateStepMessage(desc, step, bijection);
+                            }}
+                            onContinue={() => {
+                                if (!isAttacking) return; // Only continue if attack is active
+                                chatRef.current?.createSkeleton();
+                            }}
+                            onReset={resetAllStates}
                         />
                         <div className="flex flex-col gap-4 lg:col-span-2">
                             <div className="flex-grow">

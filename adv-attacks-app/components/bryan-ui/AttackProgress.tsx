@@ -47,7 +47,6 @@ export function AttackProgress({
         const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
         if (!steps) return;
 
-        // If we've completed all steps, call onComplete
         if (currentStep >= steps.length) {
             onComplete?.();
             return;
@@ -67,13 +66,6 @@ export function AttackProgress({
                 if (newProgress >= 100) {
                     clearInterval(progressTimer);
                     setStepComplete(true);
-                    
-                    // Get current step description and notify parent with bijection
-                    const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
-                    if (steps?.[currentStep]) {
-                        onStepReady?.(steps[currentStep].description, currentStep, currentBijection || undefined);
-                    }
-                    
                     return 100;
                 }
                 return newProgress;
@@ -81,7 +73,17 @@ export function AttackProgress({
         }, updateInterval);
 
         return () => clearInterval(progressTimer);
-    }, [currentStep, isAttacking, selectedModel, selectedAttack, onComplete, currentBijection]);
+    }, [currentStep, isAttacking, selectedModel, selectedAttack, onComplete]);
+
+    // Separate effect for step completion
+    useEffect(() => {
+        if (stepComplete && selectedModel && selectedAttack) {
+            const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
+            if (steps?.[currentStep]) {
+                onStepReady?.(steps[currentStep].description, currentStep, currentBijection || undefined);
+            }
+        }
+    }, [stepComplete, selectedModel, selectedAttack, currentStep, currentBijection, onStepReady]);
 
     const handleContinue = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent default button behavior

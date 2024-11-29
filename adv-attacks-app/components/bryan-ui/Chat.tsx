@@ -45,6 +45,7 @@ export const Chat = forwardRef<{
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [isAttackStarted, setIsAttackStarted] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const createSkeleton = () => {
         setMessages(prev => [...prev, { 
@@ -65,18 +66,55 @@ export const Chat = forwardRef<{
     const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>) => {
         if (!selectedPrompt || !selectedAttack) return;
         
+        const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, bijection);
+        
+        // Update user message immediately
         setMessages(prev => {
             const newMessages = [...prev];
             const skeletonIndex = newMessages.findIndex(m => m.isSkeleton);
             if (skeletonIndex !== -1) {
                 newMessages[skeletonIndex] = {
                     sender: "user",
-                    text: getStepDescription(selectedPrompt, selectedAttack, step, bijection),
+                    text: stepMessages.userMessage,
                     isSkeleton: false
                 };
+                // Add empty AI message for animation
+                newMessages.push({
+                    sender: "assistant",
+                    text: "",
+                    isTyping: true
+                });
             }
             return newMessages;
         });
+
+        // Animate AI message after delay
+        setTimeout(() => {
+            let currentText = "";
+            animateText(stepMessages.aiMessage, (text) => {
+                currentText = text;
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    const lastMessage = newMessages[newMessages.length - 1];
+                    if (lastMessage && lastMessage.sender === "assistant") {
+                        lastMessage.text = currentText;
+                        lastMessage.isTyping = true;
+                    }
+                    return newMessages;
+                });
+            }).then(() => {
+                // Remove typing indicator when done
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    const lastMessage = newMessages[newMessages.length - 1];
+                    if (lastMessage && lastMessage.sender === "assistant") {
+                        lastMessage.text = stepMessages.aiMessage;
+                        lastMessage.isTyping = false;
+                    }
+                    return newMessages;
+                });
+            });
+        }, 1000);
     };
 
     const handleReset = () => {

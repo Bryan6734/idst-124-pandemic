@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { Paperclip, Mic, CornerDownLeft } from "lucide-react";
+import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Message {
     sender: "user" | "assistant";
     text: string;
     isTyping?: boolean;
+    isSkeleton?: boolean;
 }
 
 interface ChatProps {
@@ -32,9 +33,13 @@ export function Chat({ selectedPrompt, selectedModel }: ChatProps) {
     const [isTyping, setIsTyping] = useState(false);
 
     const handleSendMessage = () => {
-        if (displayText) {
-            setMessages(prev => [...prev, { sender: "user", text: displayText }]);
-            setDisplayText("");
+        if (selectedPrompt) {
+            // Add skeleton message for user
+            setMessages(prev => [...prev, { 
+                sender: "user", 
+                text: "", 
+                isSkeleton: true 
+            }]);
         }
     };
 
@@ -124,22 +129,54 @@ export function Chat({ selectedPrompt, selectedModel }: ChatProps) {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                            className={`flex items-start gap-4 mb-6 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                         >
+                            {message.sender === "assistant" && selectedModel && (
+                                <div className="flex-shrink-0">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                        {selectedModel === 'gpt4' && <Rabbit className="h-6 w-6" />}
+                                        {selectedModel === 'claude' && <Bird className="h-6 w-6" />}
+                                        {selectedModel === 'llama' && <Turtle className="h-6 w-6" />}
+                                    </div>
+                                </div>
+                            )}
                             <div
-                                className={`max-w-[80%] rounded-lg p-3 ${
-                                    message.sender === "user" ? "bg-primary/10 text-foreground" : "bg-muted"
-                                }`}
+                                className={cn(
+                                    "max-w-[80%] rounded-lg p-4",
+                                    message.sender === "user" ? "bg-primary/10 text-foreground" : "bg-muted",
+                                    message.isSkeleton && "animate-pulse"
+                                )}
                             >
-                                {message.text}
-                                {message.isTyping && (
-                                    <motion.span
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ repeat: Infinity, duration: 1 }}
-                                    >
-                                        ▋
-                                    </motion.span>
+                                {message.isSkeleton ? (
+                                    <div className="space-y-2">
+                                        {message.sender === "user" ? (
+                                            // Longer skeleton for user message
+                                            <div className="space-y-2">
+                                                <div className="h-4 w-[180px] bg-primary/20 rounded"></div>
+                                                <div className="h-4 w-[140px] bg-primary/20 rounded"></div>
+                                            </div>
+                                        ) : (
+                                            // Longer skeleton for assistant message
+                                            <div className="space-y-2">
+                                                <div className="h-4 w-[200px] bg-muted-foreground/20 rounded"></div>
+                                                <div className="h-4 w-[150px] bg-muted-foreground/20 rounded"></div>
+                                                <div className="h-4 w-[180px] bg-muted-foreground/20 rounded"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <>
+                                        {message.text}
+                                        {message.isTyping && (
+                                            <motion.span
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ repeat: Infinity, duration: 1 }}
+                                            >
+                                                ▋
+                                            </motion.span>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </motion.div>

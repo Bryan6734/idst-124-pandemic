@@ -1,6 +1,6 @@
 "use client";
 import {
-	Share,
+	User,
 
 } from "lucide-react";
 import { useState } from "react";
@@ -38,10 +38,12 @@ export default function Home() {
 						<h1 className="text-xl font-semibold">An Introduction to Adversarial Attacks</h1>
 						
 						<MobileDrawer/>
-						<Button variant="outline" size="sm" className="ml-auto gap-1.5 text-sm">
-							<Share className="size-3.5" />
-							GitHub
-						</Button>
+						<a href="https://bryansukidi.com" target="_blank" rel="noopener noreferrer" className="ml-auto">
+							<Button variant="outline" size="sm" className="gap-1.5 text-sm">
+								<User className="size-3.5" />
+								By Bryan Sukidi
+							</Button>
+						</a>
 					</header>
 					<main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
 						<ControlPanels 

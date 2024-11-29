@@ -28,7 +28,7 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 	{
 		title: "Get Started",
 		content:
-			"Excited to explore adversarial attacks? First, select a language model, an attack method, and finally a harmful prompt. Let's circumvent some safety guardrails!",
+			"Excited to explore adversarial attacks? First, select a language model, an attack method, and finally a harmful prompt. Let's go circumvent some safety guardrails!",
 	},
 ];
 

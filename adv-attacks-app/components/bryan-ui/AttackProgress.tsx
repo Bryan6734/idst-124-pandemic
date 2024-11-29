@@ -55,8 +55,8 @@ export function AttackProgress({
         // Reset step completion state when starting a new step
         setStepComplete(false);
 
-        // Update progress smoothly over 5 seconds
-        const stepDuration = 5000; // 5 seconds
+        // Use the duration from the current step
+        const stepDuration = steps[currentStep].duration;
         const updateInterval = 50; // Update every 50ms
         const incrementAmount = (100 * updateInterval) / stepDuration;
         

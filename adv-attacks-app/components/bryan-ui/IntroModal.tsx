@@ -90,14 +90,14 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 										animate={{ opacity: 1, y: 0 }}
 										exit={{ opacity: 0, y: -10 }}
 										transition={{ duration: 0.2, delay: 0.1 }}
-										className="py-4"
+										className="py-6"
 									>
 										<p className="text-muted-foreground">{introSteps[currentStep].content}</p>
 									</motion.div>
 								</AnimatePresence>
 							</motion.div>
-							<motion.div>
-								<div className="flex items-center justify-between">
+							<motion.div className="pt-2">
+								<div className="flex items-center justify-between space-x-4">
 									<Button 
                                         variant="outline" 
                                         onClick={handleBack} 
@@ -117,7 +117,7 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 										))}
 									</div>
 									<Button 
-                                        variant="outline" 
+                                        variant="default" 
                                         onClick={handleNext}
                                         className="!outline-none !ring-0 !ring-offset-0 hover:!ring-0 focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0"
                                         style={{ outline: 'none' }}

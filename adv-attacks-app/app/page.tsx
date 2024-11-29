@@ -1,7 +1,7 @@
 "use client";
 
 import { User } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { IntroModal } from "@/components/bryan-ui/IntroModal"
@@ -15,7 +15,7 @@ export const description =
 	"An AI playground with a sidebar navigation and a main content area. The playground has a header with a settings drawer and a share button. The sidebar has navigation links and a user menu. The main content area shows a form to configure the model and messages.";
 
 export default function Home() {
-	const [showIntroModal, setShowIntroModal] = useState(false);
+	const [showIntroModal, setShowIntroModal] = useState(true);
 	
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
@@ -27,14 +27,6 @@ export default function Home() {
     // Create ref to Chat component's updateStepMessage function
     const chatRef = useRef<{ updateStepMessage: (desc: string, step: number, bijection: any) => void; createSkeleton: () => void }>();
     
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowIntroModal(true);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, []);
-
 	return (
 		<TooltipProvider delayDuration={100}>
 			<IntroModal showIntroModal={showIntroModal} 

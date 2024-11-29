@@ -20,17 +20,17 @@ export const ATTACK_STEPS: ModelAttackMap = {
                 {
                     title: 'Initialize Attack',
                     description: 'Preparing token embeddings and model parameters',
-                    duration: 500
+                    duration: 3000
                 },
                 {
                     title: 'Gradient Computation',
                     description: 'Computing loss gradients for each token position',
-                    duration: 500
+                    duration: 3000
                 },
                 {
                     title: 'Token Optimization',
                     description: 'Selecting optimal adversarial tokens',
-                    duration: 500
+                    duration: 3000
                 }
             ]
         },
@@ -40,17 +40,17 @@ export const ATTACK_STEPS: ModelAttackMap = {
                 {
                     title: 'Population Initialization',
                     description: 'Creating initial population of candidate prompts',
-                    duration: 500
+                    duration: 3000
                 },
                 {
                     title: 'Genetic Evolution',
                     description: 'Applying mutation and crossover operations',
-                    duration: 500
+                    duration: 3000
                 },
                 {
                     title: 'Fitness Evaluation',
-                    description: 'Evaluating attack success probability',
-                    duration: 500
+                    description: 'Evaluating attack success rate',
+                    duration: 3000
                 }
             ]
         },
@@ -60,28 +60,43 @@ export const ATTACK_STEPS: ModelAttackMap = {
                 {
                     title: 'Create Bijection Language',
                     description: 'First, I\'ll create a mapping between characters, also known as a bijection. This is to determine how I\'ll encode my language using letters and digits.',
-                    duration: 500
+                    duration: 3000
                 },
 
                 {
                     title: 'Instructions',
                     description: 'Then, I\'ll design a system message explaining the bijection. My goal is to teach the model exactly how this new encoding works through examples.',
-                    duration: 500
+                    duration: 3000
                 },
                 {
-                    title: 'Teach the Bijection',
+                    title: 'Teaching the Bijection (1/4)',
                     description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
-                    duration: 500
+                    duration: 2000
+                },
+                {
+                    title: 'Teaching the Bijection (2/4)',
+                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
+                    duration: 1000
+                },
+                {
+                    title: 'Teaching the Bijection (3/4)',
+                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
+                    duration: 800
+                },
+                {
+                    title: 'Teaching the Bijection (4/4)',
+                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
+                    duration: 800
                 },
                 {
                     title: 'Encoding Harmful Prompt',
-                    description: 'Then, I\'ll carefully encode my harmful query into the bijection language. The key is to maintain the query\'s core meaning while disguising its original form.',
-                    duration: 500
+                    description: 'At the end, I\'ll secretly encode my harmful query into the bijection language. The key is to maintain the query\'s core meaning while disguising its original form.',
+                    duration: 3000
                 },
                 {
                     title: 'Decoding Translated Prompt',
                     description: 'Finally, I\'ll decode the model\'s response using the inverse mapping. This reveals the potentially harmful content that slipped past the initial safety filters.',
-                    duration: 500
+                    duration: 3000
                 }
             ]
         }
@@ -91,19 +106,19 @@ export const ATTACK_STEPS: ModelAttackMap = {
             name: 'Greedy Coordinate Gradient',
             steps: [
                 {
-                    title: 'Model Analysis',
-                    description: 'Analyzing Claude\'s response patterns',
-                    duration: 500
+                    title: 'Initialize Attack',
+                    description: 'Preparing token embeddings and model parameters',
+                    duration: 3000
                 },
                 {
-                    title: 'Gradient Estimation',
-                    description: 'Estimating token importance through sampling',
-                    duration: 500
+                    title: 'Gradient Computation',
+                    description: 'Computing loss gradients for each token position',
+                    duration: 3000
                 },
                 {
-                    title: 'Token Selection',
-                    description: 'Choosing effective adversarial tokens',
-                    duration: 500
+                    title: 'Token Optimization',
+                    description: 'Selecting optimal adversarial tokens',
+                    duration: 3000
                 }
             ]
         },
@@ -153,19 +168,19 @@ export const ATTACK_STEPS: ModelAttackMap = {
             name: 'Greedy Coordinate Gradient',
             steps: [
                 {
-                    title: 'Embedding Analysis',
-                    description: 'Analyzing Llama\'s token embeddings',
-                    duration: 500
+                    title: 'Initialize Attack',
+                    description: 'Preparing token embeddings and model parameters',
+                    duration: 3000
                 },
                 {
                     title: 'Gradient Computation',
-                    description: 'Computing token-wise gradients',
-                    duration: 500
+                    description: 'Computing loss gradients for each token position',
+                    duration: 3000
                 },
                 {
-                    title: 'Optimization',
-                    description: 'Optimizing adversarial suffix',
-                    duration: 500
+                    title: 'Token Optimization',
+                    description: 'Selecting optimal adversarial tokens',
+                    duration: 3000
                 }
             ]
         },

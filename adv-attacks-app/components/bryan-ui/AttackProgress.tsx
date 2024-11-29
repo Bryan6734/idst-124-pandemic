@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ATTACK_STEPS } from "@/lib/attack-steps";
+import { BIJECTIONS } from "@/lib/step-descriptions";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -11,7 +12,7 @@ interface AttackProgressProps {
     selectedModel?: string;
     selectedAttack?: string;
     isAttacking: boolean;
-    onStepReady?: (stepDescription: string, step: number) => void;
+    onStepReady?: (stepDescription: string, step: number, bijection?: Record<string, string>) => void;
     onComplete?: () => void;
     onContinue?: () => void;
 }
@@ -27,9 +28,13 @@ export function AttackProgress({
     const [currentStep, setCurrentStep] = useState(0);
     const [progress, setProgress] = useState(0);
     const [stepComplete, setStepComplete] = useState(false);
+    const [currentBijection, setCurrentBijection] = useState<Record<string, string> | null>(null);
 
     useEffect(() => {
         if (isAttacking) {
+            // Select a new bijection when attack starts
+            const randomBijection = BIJECTIONS[Math.floor(Math.random() * BIJECTIONS.length)];
+            setCurrentBijection(randomBijection);
             setCurrentStep(0);
             setProgress(0);
             setStepComplete(false);
@@ -63,10 +68,10 @@ export function AttackProgress({
                     clearInterval(progressTimer);
                     setStepComplete(true);
                     
-                    // Get current step description and notify parent
+                    // Get current step description and notify parent with bijection
                     const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
                     if (steps?.[currentStep]) {
-                        onStepReady?.(steps[currentStep].description, currentStep);
+                        onStepReady?.(steps[currentStep].description, currentStep, currentBijection || undefined);
                     }
                     
                     return 100;
@@ -76,7 +81,7 @@ export function AttackProgress({
         }, updateInterval);
 
         return () => clearInterval(progressTimer);
-    }, [currentStep, isAttacking, selectedModel, selectedAttack, onComplete]);
+    }, [currentStep, isAttacking, selectedModel, selectedAttack, onComplete, currentBijection]);
 
     const handleContinue = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent default button behavior

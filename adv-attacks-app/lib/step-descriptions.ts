@@ -1,6 +1,6 @@
-type StepMessageGenerator = (prompt: string, step: number) => string;
+type StepMessageGenerator = (prompt: string, step: number, bijection?: Record<string, string>) => string;
 
-const BIJECTIONS = [
+export const BIJECTIONS = [
     {
         "f": "f", "y": "y", "w": "w", "t": "t", "x": "x", "g": "g", "n": "n",
         "z": "z", "v": "v", "i": "i", "r": "r", "a": "a", "b": "b", "e": "e",
@@ -33,26 +33,30 @@ const BIJECTIONS = [
     }
 ];
 
-const bijectionMessages: StepMessageGenerator = (prompt, step) => {
-    // Select a random bijection
-    const selectedBijection = BIJECTIONS[Math.floor(Math.random() * BIJECTIONS.length)];
+// Store the currently selected bijection
+let currentBijection: Record<string, string> | null = null;
+
+const bijectionMessages: StepMessageGenerator = (prompt, step, bijection) => {
+    if (!bijection) {
+        return "Error: No bijection mapping available";
+    }
     
     switch (step) {
         case 0: {
             // Format first 15 mappings with arrows
-            const formattedMappings = Object.entries(selectedBijection)
+            const formattedMappings = Object.entries(bijection)
                 .slice(-15)  // Take last 15 entries
                 .map(([from, to]) => `${from} → ${to}`)
                 .join(', ');
             
-            return `${formattedMappings}`;
+            return `You will learn to speak in this bijection language. ${formattedMappings}, ...`;
         }
-        case 1:
-            // Encode the prompt using the bijection
+        case 1: {
             const encodedPrompt = prompt.toLowerCase().split('')
-            .map(char => selectedBijection[char] || char)
-            .join('');
-            return `${prompt} → ${encodedPrompt}`;
+                .map(char => bijection[char] || char)
+                .join('');
+            return `Here is the translation from English to the bijection: "${prompt}" → "${encodedPrompt}"`;
+        }
         case 2:
             return `Crafting system message to explain the encoding...`;
         case 3:
@@ -88,10 +92,10 @@ const autodanMessages: StepMessageGenerator = (prompt, step) => {
     }
 };
 
-export function getStepDescription(prompt: string, attackType: string, step: number): string {
+export function getStepDescription(prompt: string, attackType: string, step: number, bijection?: Record<string, string>): string {
     switch (attackType) {
         case 'bijection':
-            return bijectionMessages(prompt, step);
+            return bijectionMessages(prompt, step, bijection);
         case 'gcg':
             return gcgMessages(prompt, step);
         case 'autodan':

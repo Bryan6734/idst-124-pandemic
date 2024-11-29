@@ -32,7 +32,7 @@ const MODEL_GREETINGS: Record<string, string> = {
 };
 
 export const Chat = forwardRef<{ 
-    updateStepMessage: (desc: string, step: number) => void;
+    updateStepMessage: (desc: string, step: number, bijection?: Record<string, string>) => void;
     createSkeleton: () => void;
 }, ChatProps>(({ 
     selectedPrompt, 
@@ -62,7 +62,7 @@ export const Chat = forwardRef<{
         }
     };
 
-    const updateStepMessage = (description: string, step: number) => {
+    const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>) => {
         if (!selectedPrompt || !selectedAttack) return;
         
         setMessages(prev => {
@@ -71,7 +71,7 @@ export const Chat = forwardRef<{
             if (skeletonIndex !== -1) {
                 newMessages[skeletonIndex] = {
                     sender: "user",
-                    text: getStepDescription(selectedPrompt, selectedAttack, step),
+                    text: getStepDescription(selectedPrompt, selectedAttack, step, bijection),
                     isSkeleton: false
                 };
             }

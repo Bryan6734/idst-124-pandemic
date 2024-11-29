@@ -32,7 +32,7 @@ interface ControlPanelsProps {
     onModelSelect?: (model: string) => void;
     onAttackSelect?: (attack: string) => void;
     isAttacking?: boolean;
-    onStepReady?: (desc: string, step: number) => void;
+    onStepReady?: (desc: string, step: number, bijection?: Record<string, string>) => void;
     onContinue?: () => void;
 }
 
@@ -209,7 +209,7 @@ export function ControlPanels({
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
                         isAttacking={isAttacking || false}
-                        onStepReady={(desc, step) => onStepReady?.(desc, step)}
+                        onStepReady={(desc, step, bijection) => onStepReady?.(desc, step, bijection)}
                         onComplete={() => {}}
                         onContinue={onContinue}
                     />

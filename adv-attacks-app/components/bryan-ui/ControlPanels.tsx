@@ -151,53 +151,53 @@ export function ControlPanels({
 							</SelectTrigger>
 							<SelectContent className="w-[--radix-select-trigger-width]">
 								<SelectItem value="gcg">
-									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+									<div className="flex items-center gap-3 text-muted-foreground">
 										<Cpu className="size-5 flex-shrink-0" />
-										<div className="grid gap-0.5 min-w-0">
-											<p className="truncate">
-												<span className="font-medium text-foreground">Greedy Coordinate Gradient </span>
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">Greedy Coordinate Gradient </span>
 												(GCG)
 											</p>
-											<p className="text-xs truncate" data-description>
+											<p className="text-xs" data-description>
 												Uses model gradients to craft an adversarial suffix. (Zou et al, 2023)
 											</p>
 										</div>
 									</div>
 								</SelectItem>
 								<SelectItem value="autodan">
-									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+									<div className="flex items-center gap-3 text-muted-foreground">
 										<GitBranch className="size-5 flex-shrink-0" />
-										<div className="grid gap-0.5 min-w-0">
-											<p className="truncate">
-												<span className="font-medium text-foreground">AutoDAN </span>(Do-Anything-Now)
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">AutoDAN </span>(Do-Anything-Now)
 											</p>
-											<p className="text-xs truncate" data-description>
+											<p className="text-xs" data-description>
 												Uses hierarchical genetic algorithms to craft an adversarial prompt. (Liu et al, 2024)
 											</p>
 										</div>
 									</div>
 								</SelectItem>
 								<SelectItem value="bijection">
-									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+									<div className="flex items-center gap-3 text-muted-foreground">
 										<Network className="size-5 flex-shrink-0" />
-										<div className="grid gap-0.5 min-w-0">
-											<p className="truncate">
-												<span className="font-medium text-foreground">Bijection Learning</span>
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">Bijection Learning</span>
 											</p>
-											<p className="text-xs truncate" data-description>
+											<p className="text-xs" data-description>
 												Encodes the prompt by mapping tokens using a bijection, disguising the prompt. (Huang et al, 2024)
 											</p>
 										</div>
 									</div>
 								</SelectItem>
 								<SelectItem value="tap">
-									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+									<div className="flex items-center gap-3 text-muted-foreground">
 										<GitFork className="size-5 flex-shrink-0" />
-										<div className="grid gap-0.5 min-w-0">
-											<p className="truncate">
-												<span className="font-medium text-foreground">TAP </span>(Tree of Attacks)
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">TAP </span>(Tree of Attacks w/ Pruning)
 											</p>
-											<p className="text-xs truncate" data-description>
+											<p className="text-xs" data-description>
 												Uses an attacker LLM to iteratively craft attack prompts until one of them succeeds. (Mehrotra et al, 2024)
 											</p>
 										</div>

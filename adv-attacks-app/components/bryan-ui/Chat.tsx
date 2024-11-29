@@ -45,7 +45,6 @@ export const Chat = forwardRef<{
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [isAttackStarted, setIsAttackStarted] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
 
     const createSkeleton = () => {
         setMessages(prev => [...prev, { 
@@ -114,19 +113,6 @@ export const Chat = forwardRef<{
                 });
             }, 1000);
         }, 100); // Brief delay for skeleton exit
-    };
-
-    const handleReset = () => {
-        setIsAttackStarted(false);
-        // Preserve or resend the initial message if there's a selected model
-        if (selectedModel && MODEL_GREETINGS[selectedModel]) {
-            const greeting = MODEL_GREETINGS[selectedModel];
-            setMessages([{ sender: "assistant", text: greeting }]);
-        } else {
-            setMessages([]);
-        }
-        setDisplayText("");
-        onAttackComplete?.();
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -209,9 +195,6 @@ export const Chat = forwardRef<{
 
     return (
         <div className="relative flex h-[650px] flex-col rounded-xl bg-muted/50 p-4">
-            <Badge variant="outline" className="absolute right-3 top-3 z-10">
-                Output
-            </Badge>
             <div 
                 className="flex-1 space-y-4 overflow-y-auto pt-8 mb-6"
                 style={{ scrollBehavior: 'smooth' }}
@@ -296,15 +279,23 @@ export const Chat = forwardRef<{
                 </AnimatePresence>
             </div>
             <div className="relative overflow-hidden rounded-lg border bg-background">
-                <Textarea
-                    id="message"
-                    value={displayText}
-                    placeholder="Select a harmful prompt in the control panel..."
-                    className="min-h-[84px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
-                    readOnly
-                    onKeyDown={handleKeyDown}
-                />
-                <div className="flex items-center justify-between p-3 pt-0">
+                <div className="relative">
+                    {!displayText && (
+                        <div className="absolute left-4 top-4 text-muted-foreground pointer-events-none text-lg">
+                            <span>Select a harmful prompt in the control panel...</span>
+                        </div>
+                    )}
+                    <Textarea
+                        id="message"
+                        value={displayText}
+                        placeholder=""
+                        className="min-h-[60px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
+                        style={{ fontSize: '1.125rem' }}
+                        readOnly
+                        onKeyDown={handleKeyDown}
+                    />
+                </div>
+                <div className="flex items-center justify-between p-3">
                     <div className="flex items-center gap-2">
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -325,27 +316,16 @@ export const Chat = forwardRef<{
                             <TooltipContent side="top">Use Microphone</TooltipContent>
                         </Tooltip>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2">
-                        {isAttackStarted ? (
-                            <Button 
-                                onClick={handleReset}
-                                className="w-full"
-                                variant="destructive"
-                            >
-                                Reset Attack
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={handleLaunchAttack}
-                                className="w-full gap-2"
-                                variant="destructive"
-                                disabled={!selectedPrompt || !selectedModel || !selectedAttack}
-                            >
-                                Launch Attack
-                                <CornerDownLeft className="h-4 w-4" />
-                            </Button>
-                        )}
-                    </div>
+                    <Button
+                        onClick={handleLaunchAttack}
+                        disabled={!selectedPrompt || !selectedModel || !selectedAttack || isAttackStarted}
+                        variant="destructive"
+                        size="default"
+                        className="gap-2"
+                    >
+                        Launch Attack
+                        <CornerDownLeft className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
         </div>

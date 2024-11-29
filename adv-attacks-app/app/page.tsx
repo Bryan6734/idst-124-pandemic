@@ -25,8 +25,19 @@ export default function Home() {
     const [isAttacking, setIsAttacking] = useState(false);
 
     // Create ref to Chat component's updateStepMessage function
-    const chatRef = useRef<{ updateStepMessage: (desc: string, step: number, bijection: any) => void; createSkeleton: () => void }>();
-    
+    const chatRef = useRef<{ 
+        updateStepMessage: (desc: string, step: number, bijection: any) => void; 
+        createSkeleton: () => void;
+        resetChat: () => void;
+    }>();
+
+    const resetAllStates = () => {
+        setSelectedPrompt(undefined);
+        setSelectedAttack("");
+        setIsAttacking(false);
+        chatRef.current?.resetChat();
+    };
+
 	return (
 		<TooltipProvider delayDuration={100}>
 			<IntroModal showIntroModal={showIntroModal} 
@@ -49,7 +60,10 @@ export default function Home() {
 					<main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
 						<ControlPanels 
                             onPromptSelect={setSelectedPrompt}
-                            onModelSelect={setSelectedModel}
+                            onModelSelect={(model) => {
+                                setSelectedModel(model);
+                                resetAllStates();
+                            }}
                             onAttackSelect={setSelectedAttack}
                             isAttacking={isAttacking}
                             onStepReady={(desc, step, bijection) => chatRef.current?.updateStepMessage(desc, step, bijection)}

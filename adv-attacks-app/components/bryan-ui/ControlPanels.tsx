@@ -46,6 +46,14 @@ export function ControlPanels({
 }: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
+    const [selectedPrompt, setSelectedPrompt] = useState("");
+
+    const resetSelections = () => {
+        setSelectedAttack("");
+        setSelectedPrompt("");
+        onPromptSelect?.("");
+        onAttackSelect?.("");
+    };
 
 	return (
 		<div className="relative hidden flex-col items-start gap-8 md:flex" x-chunk="dashboard-03-chunk-0">
@@ -55,6 +63,7 @@ export function ControlPanels({
 					<div className="grid gap-3">
 						<Label htmlFor="model">Model</Label>
 						<Select onValueChange={(value) => {
+                                    resetSelections();
                                     onModelSelect?.(value);
                                     setSelectedModel(value);
                                 }}>
@@ -107,9 +116,12 @@ export function ControlPanels({
 				
 					<div className="grid gap-3">
 						<Label htmlFor="prompt">Harmful Prompt</Label>
-						<Select onValueChange={(value) => {
-                                    onPromptSelect?.(value);
-                                }}>
+						<Select 
+                            value={selectedPrompt}
+                            onValueChange={(value) => {
+                                setSelectedPrompt(value);
+                                onPromptSelect?.(value);
+                            }}>
 							<SelectTrigger id="prompt" className="items-start whitespace-nowrap overflow-hidden [&_[data-description]]:hidden">
 								<SelectValue className="truncate text-left" placeholder="Select a prompt" />
 							</SelectTrigger>
@@ -142,10 +154,12 @@ export function ControlPanels({
 					<legend className="-ml-1 px-1 text-sm font-medium">Jailbreak</legend>
                     <div className="grid gap-3">
 						<Label htmlFor="attack">Attack Vector</Label>
-						<Select onValueChange={(value) => {
-                            setSelectedAttack(value);
-                            onAttackSelect?.(value);
-                        }}>
+						<Select 
+                            value={selectedAttack}
+                            onValueChange={(value) => {
+                                setSelectedAttack(value);
+                                onAttackSelect?.(value);
+                            }}>
 							<SelectTrigger id="attack" className="items-start truncate [&_[data-description]]:hidden">
 								<SelectValue placeholder="Select an attack" />
 							</SelectTrigger>

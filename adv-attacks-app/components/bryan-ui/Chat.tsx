@@ -34,6 +34,7 @@ const MODEL_GREETINGS: Record<string, string> = {
 export const Chat = forwardRef<{ 
     updateStepMessage: (desc: string, step: number, bijection?: Record<string, string>) => void;
     createSkeleton: () => void;
+    resetChat: () => void;
 }, ChatProps>(({ 
     selectedPrompt, 
     selectedModel,
@@ -45,6 +46,8 @@ export const Chat = forwardRef<{
     const [displayText, setDisplayText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [isAttackStarted, setIsAttackStarted] = useState(false);
+    const [animationInterval, setAnimationInterval] = useState<NodeJS.Timeout | null>(null);
+    const [isModelGreeting, setIsModelGreeting] = useState(false);
 
     const createSkeleton = () => {
         setMessages(prev => [...prev, { 
@@ -140,57 +143,107 @@ export const Chat = forwardRef<{
         });
     };
 
+    const clearAnimations = () => {
+        if (animationInterval) {
+            clearInterval(animationInterval);
+            setAnimationInterval(null);
+        }
+        setIsTyping(false);
+    };
+
+    const resetChat = () => {
+        clearAnimations();
+        setMessages([]);
+        setIsAttackStarted(false);
+        setDisplayText("");
+        setIsModelGreeting(false);
+    };
+
     // Handle model selection and initial message
     useEffect(() => {
+        resetChat();
+        
         if (selectedModel && MODEL_GREETINGS[selectedModel]) {
             const greeting = MODEL_GREETINGS[selectedModel];
+            setIsModelGreeting(true);
+            setIsTyping(true);
             
-            // Clear all previous messages and add typing message
             setMessages([{ 
                 sender: "assistant", 
                 text: "", 
                 isTyping: true 
             }]);
 
-            // Animate the greeting
             let currentText = "";
-            animateText(greeting, (text) => {
-                currentText = text;
-                setMessages([
-                    { sender: "assistant", text: currentText, isTyping: true }
-                ]);
-            }).then(() => {
-                // Remove typing indicator when done
-                setMessages([
-                    { sender: "assistant", text: greeting }
-                ]);
-            });
+            let interval = setInterval(() => {
+                if (currentText.length < greeting.length) {
+                    currentText = greeting.slice(0, currentText.length + 1);
+                    setMessages([
+                        { sender: "assistant", text: currentText, isTyping: true }
+                    ]);
+                } else {
+                    clearInterval(interval);
+                    setMessages([
+                        { sender: "assistant", text: greeting }
+                    ]);
+                    setIsTyping(false);
+                    setIsModelGreeting(false);
+                    setAnimationInterval(null);
+                }
+            }, 15);
+            
+            setAnimationInterval(interval);
+            return () => {
+                clearInterval(interval);
+                setAnimationInterval(null);
+            };
         }
     }, [selectedModel]);
 
+    // Handle prompt changes
     useEffect(() => {
+        if (isModelGreeting) return; // Don't handle prompt changes during model greeting
+        
         if (selectedPrompt) {
+            clearAnimations();
             setIsTyping(true);
             setDisplayText("");
             
             let currentIndex = 0;
-            const interval = setInterval(() => {
+            let interval = setInterval(() => {
                 if (currentIndex <= selectedPrompt.length) {
                     setDisplayText(selectedPrompt.slice(0, currentIndex));
                     currentIndex++;
                 } else {
                     setIsTyping(false);
                     clearInterval(interval);
+                    setAnimationInterval(null);
                 }
             }, 15);
 
-            return () => clearInterval(interval);
+            setAnimationInterval(interval);
+            return () => {
+                clearInterval(interval);
+                setAnimationInterval(null);
+            };
         }
-    }, [selectedPrompt]);
+    }, [selectedPrompt, isModelGreeting]);
+
+    // Reset attack if model or attack vector changes during an active attack
+    useEffect(() => {
+        if (isAttackStarted) {
+            resetChat();
+            if (selectedModel && MODEL_GREETINGS[selectedModel]) {
+                const greeting = MODEL_GREETINGS[selectedModel];
+                setMessages([{ sender: "assistant", text: greeting }]);
+            }
+        }
+    }, [selectedModel, selectedAttack]); // Removed selectedPrompt dependency
 
     useImperativeHandle(ref, () => ({
         updateStepMessage,
-        createSkeleton
+        createSkeleton,
+        resetChat
     }));
 
     return (
@@ -281,7 +334,7 @@ export const Chat = forwardRef<{
             <div className="relative overflow-hidden rounded-lg border bg-background">
                 <div className="relative">
                     {!displayText && (
-                        <div className="absolute left-4 top-4 text-muted-foreground pointer-events-none text-lg">
+                        <div className="absolute left-4 top-4 text-muted-foreground pointer-events-none text-md">
                             <span>Select a harmful prompt in the control panel...</span>
                         </div>
                     )}
@@ -290,7 +343,7 @@ export const Chat = forwardRef<{
                         value={displayText}
                         placeholder=""
                         className="min-h-[60px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
-                        style={{ fontSize: '1.125rem' }}
+                        style={{ fontSize: '1rem' }}
                         readOnly
                         onKeyDown={handleKeyDown}
                     />

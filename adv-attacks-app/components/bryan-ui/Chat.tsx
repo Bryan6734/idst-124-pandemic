@@ -68,53 +68,52 @@ export const Chat = forwardRef<{
         
         const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, bijection);
         
-        // Update user message immediately
+        // First remove skeleton with exit animation
         setMessages(prev => {
-            const newMessages = [...prev];
-            const skeletonIndex = newMessages.findIndex(m => m.isSkeleton);
-            if (skeletonIndex !== -1) {
-                newMessages[skeletonIndex] = {
-                    sender: "user",
-                    text: stepMessages.userMessage,
-                    isSkeleton: false
-                };
-                // Add empty AI message for animation
-                newMessages.push({
-                    sender: "assistant",
-                    text: "",
-                    isTyping: true
-                });
-            }
+            const newMessages = prev.filter(m => !m.isSkeleton);
             return newMessages;
         });
 
-        // Animate AI message after delay
+        // Add user message after a brief delay to allow skeleton exit animation
         setTimeout(() => {
-            let currentText = "";
-            animateText(stepMessages.aiMessage, (text) => {
-                currentText = text;
-                setMessages(prev => {
-                    const newMessages = [...prev];
-                    const lastMessage = newMessages[newMessages.length - 1];
-                    if (lastMessage && lastMessage.sender === "assistant") {
-                        lastMessage.text = currentText;
-                        lastMessage.isTyping = true;
-                    }
-                    return newMessages;
+            setMessages(prev => [...prev, {
+                sender: "user",
+                text: stepMessages.userMessage,
+                isSkeleton: false
+            }, {
+                sender: "assistant",
+                text: "",
+                isTyping: true
+            }]);
+
+            // Animate AI message after delay
+            setTimeout(() => {
+                let currentText = "";
+                animateText(stepMessages.aiMessage, (text) => {
+                    currentText = text;
+                    setMessages(prev => {
+                        const newMessages = [...prev];
+                        const lastMessage = newMessages[newMessages.length - 1];
+                        if (lastMessage && lastMessage.sender === "assistant") {
+                            lastMessage.text = currentText;
+                            lastMessage.isTyping = true;
+                        }
+                        return newMessages;
+                    });
+                }).then(() => {
+                    // Remove typing indicator when done
+                    setMessages(prev => {
+                        const newMessages = [...prev];
+                        const lastMessage = newMessages[newMessages.length - 1];
+                        if (lastMessage && lastMessage.sender === "assistant") {
+                            lastMessage.text = stepMessages.aiMessage;
+                            lastMessage.isTyping = false;
+                        }
+                        return newMessages;
+                    });
                 });
-            }).then(() => {
-                // Remove typing indicator when done
-                setMessages(prev => {
-                    const newMessages = [...prev];
-                    const lastMessage = newMessages[newMessages.length - 1];
-                    if (lastMessage && lastMessage.sender === "assistant") {
-                        lastMessage.text = stepMessages.aiMessage;
-                        lastMessage.isTyping = false;
-                    }
-                    return newMessages;
-                });
-            });
-        }, 1000);
+            }, 1000);
+        }, 100); // Brief delay for skeleton exit
     };
 
     const handleReset = () => {
@@ -209,18 +208,39 @@ export const Chat = forwardRef<{
     }));
 
     return (
-        <div className="relative flex h-full flex-col rounded-xl bg-muted/50 p-4">
+        <div className="relative flex h-[650px] flex-col rounded-xl bg-muted/50 p-4">
             <Badge variant="outline" className="absolute right-3 top-3 z-10">
                 Output
             </Badge>
-            <div className="flex-1 space-y-4 overflow-y-auto pt-8">
+            <div 
+                className="flex-1 space-y-4 overflow-y-auto pt-8 mb-6"
+                style={{ scrollBehavior: 'smooth' }}
+                ref={(el) => {
+                    if (el) {
+                        el.scrollTop = el.scrollHeight;
+                    }
+                }}
+            >
                 <AnimatePresence initial={false}>
                     {messages.map((message, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
+                            initial={{ 
+                                opacity: 0, 
+                                y: message.isSkeleton ? 20 : 20  // Both enter from bottom
+                            }}
+                            animate={{ 
+                                opacity: 1, 
+                                y: 0
+                            }}
+                            exit={{ 
+                                opacity: 0, 
+                                y: message.isSkeleton ? 20 : -20  // Skeleton exits down, messages exit up
+                            }}
+                            transition={{
+                                duration: 0.2,
+                                ease: "easeOut"
+                            }}
                             className={`flex items-start gap-4 mb-6 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                         >
                             {message.sender === "assistant" && selectedModel && (

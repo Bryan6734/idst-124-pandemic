@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ATTACK_STEPS } from "@/lib/attack-steps";
 import { BIJECTIONS } from "@/lib/step-descriptions";
@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-interface AttackProgressProps {
+export interface AttackProgressProps {
     selectedModel?: string;
     selectedAttack?: string;
     isAttacking: boolean;
@@ -17,14 +17,18 @@ interface AttackProgressProps {
     onContinue?: () => void;
 }
 
-export function AttackProgress({ 
+export interface AttackProgressHandle {
+    handleContinue: (e: React.MouseEvent) => void;
+}
+
+const AttackProgress = forwardRef<AttackProgressHandle, AttackProgressProps>(({ 
     selectedModel, 
     selectedAttack, 
     isAttacking,
     onStepReady,
     onComplete,
     onContinue
-}: AttackProgressProps) {
+}, ref) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [progress, setProgress] = useState(0);
     const [stepComplete, setStepComplete] = useState(false);
@@ -103,13 +107,17 @@ export function AttackProgress({
         setStepComplete(false);
     };
 
+    useImperativeHandle(ref, () => ({
+        handleContinue
+    }));
+
     if (!isAttacking || !selectedModel || !selectedAttack) return null;
 
     const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
     if (!steps || currentStep >= steps.length) return null;
 
     return (
-        <div className="space-y-4 p-4">
+        <div className="w-full space-y-4">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentStep}
@@ -137,19 +145,15 @@ export function AttackProgress({
                             transition={{ delay: 0.2 }}
                             className="flex justify-end"
                         >
-                            <Button
-                                onClick={handleContinue}
-                                className="gap-2"
-                                size="sm"
-                                type="button" // Explicitly set button type
-                            >
-                                Continue
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
+                 
                         </motion.div>
                     )}
                 </motion.div>
             </AnimatePresence>
         </div>
     );
-}
+});
+
+AttackProgress.displayName = "AttackProgress";
+
+export default AttackProgress;

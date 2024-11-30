@@ -9,13 +9,14 @@ import {
 	Cpu,
 	GitFork,
 	CornerDownLeft,
+	ArrowRight
 } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { AttackProgress } from "./AttackProgress";
+import { useState, useRef } from "react";
+import AttackProgress, { AttackProgressHandle } from "./AttackProgress";
 
 interface ControlPanelsProps {
     onPromptSelect?: (prompt: string) => void;
@@ -41,6 +42,12 @@ export function ControlPanels({
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
     const [selectedPrompt, setSelectedPrompt] = useState("");
+    const attackProgressRef = useRef<AttackProgressHandle>(null);
+
+    const handleContinueFromParent = () => {
+        // This will trigger the continue action in AttackProgress
+        attackProgressRef.current?.handleContinue(new MouseEvent('click') as React.MouseEvent);
+    };
 
     const resetSelections = () => {
         setSelectedAttack("");
@@ -230,6 +237,7 @@ export function ControlPanels({
 						</Select>
 					</div>
                     <AttackProgress
+                        ref={attackProgressRef}
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
                         isAttacking={isAttacking}
@@ -264,10 +272,11 @@ export function ControlPanels({
                             <Button 
                                 variant="default"
                                 className="flex-1"
-                                onClick={onContinue}
                                 type="button"
+                                onClick={(e) => attackProgressRef.current?.handleContinue(e)}
                             >
                                 Continue
+                                <ArrowRight className="h-4 w-4" />
                             </Button>
                         )}
                     </div>

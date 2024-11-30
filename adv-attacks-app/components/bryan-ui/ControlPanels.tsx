@@ -1,25 +1,13 @@
 "use client";
-import Image from "next/image";
 import {
 	Bot,
 	Brain,
 	GitBranch,
-	Code2,
 	Network,
-	Fingerprint,
 	MessageSquare,
 	Sparkles,
 	Cpu,
-	Zap,
-	Settings,
-	Settings2,
-	Share,
-	SquareTerminal,
-	SquareUser,
-	Triangle,
 	GitFork,
-	Moon,
-	Sun,
 	CornerDownLeft,
 } from "lucide-react";
 

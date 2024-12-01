@@ -24,7 +24,7 @@ export default function Home() {
 					<MobileDrawer/>
 					<a href="https://bryansukidi.com" target="_blank" rel="noopener noreferrer" className="ml-auto">
 						<Button variant="outline" size="sm" className="gap-1.5 text-sm">
-							<User className="size-3.5" />
+							<User className="size-3.5 stroke-red-500 dark:stroke-red-400" />
 							By Bryan Sukidi
 						</Button>
 					</a>

@@ -188,7 +188,7 @@ export function ControlPanels({
 								<SelectValue placeholder="Select an attack" />
 							</SelectTrigger>
 							<SelectContent className="w-[--radix-select-trigger-width]">
-								<SelectItem value="gcg">
+								<SelectItem value="gcg" disabled>
 									<div className="flex items-center gap-3 text-muted-foreground">
 										<Cpu className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5">
@@ -202,7 +202,7 @@ export function ControlPanels({
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="autodan">
+								<SelectItem value="autodan" disabled>
 									<div className="flex items-center gap-3 text-muted-foreground">
 										<GitBranch className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5">
@@ -223,12 +223,12 @@ export function ControlPanels({
 												<span className="font-medium">Bijection Learning</span>
 											</p>
 											<p className="text-xs" data-description>
-												Encodes the prompt by mapping tokens using a bijection, disguising the prompt. (Huang et al, 2024)
+												Teaches LLMs invertible languages to bypass safety mechanisms. (Huang et al, 2024)
 											</p>
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="tap">
+								<SelectItem value="tap" disabled>
 									<div className="flex items-center gap-3 text-muted-foreground">
 										<GitFork className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5">

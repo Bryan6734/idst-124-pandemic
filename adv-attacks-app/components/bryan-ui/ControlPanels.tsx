@@ -35,6 +35,8 @@ interface ControlPanelsProps {
     onContinue?: () => void;
     /** Callback to reset the attack state and clear all selections */
     onReset?: () => void;
+    /** The currently selected model */
+    selectedModel?: string;
 }
 
 export function ControlPanels({ 
@@ -45,10 +47,11 @@ export function ControlPanels({
     onAttackStart,
     onStepReady,
     onContinue,
-    onReset
+    onReset,
+    selectedModel: initialSelectedModel
 }: ControlPanelsProps) {
     const [selectedAttack, setSelectedAttack] = useState("");
-    const [selectedModel, setSelectedModel] = useState("");
+    const [selectedModel, setSelectedModel] = useState(initialSelectedModel || "");
     const [selectedPrompt, setSelectedPrompt] = useState("");
     const attackProgressRef = useRef<AttackProgressHandle>(null);
 
@@ -76,7 +79,7 @@ export function ControlPanels({
 		<div className="relative hidden flex-col items-start gap-8 md:flex" x-chunk="dashboard-03-chunk-0">
 			<div className="grid w-full items-start gap-6">
 				<fieldset className="grid gap-6 rounded-lg border p-4">
-					<legend className="-ml-1 px-1 text-sm font-medium">Control Panel</legend>
+					<legend className="-ml-1 px-1 text-sm font-medium whitespace-nowrap">Control Panel</legend>
 					<div className="grid gap-3">
 						<Label htmlFor="model">Model</Label>
 						<Select 
@@ -170,7 +173,7 @@ export function ControlPanels({
 					</div>
 				</fieldset>
 				<fieldset className="grid gap-6 rounded-lg border p-4">
-					<legend className="-ml-1 px-1 text-sm font-medium">Jailbreak</legend>
+					<legend className="-ml-1 px-1 text-sm font-medium whitespace-nowrap">Jailbreak</legend>
                     <div className="grid gap-3">
 						<Label htmlFor="attack">Attack Vector</Label>
 						<Select 

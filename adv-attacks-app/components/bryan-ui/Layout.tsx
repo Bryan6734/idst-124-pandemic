@@ -131,9 +131,10 @@ export function Layout() {
                 exit="exit"
                 className="space-y-4"
               >
-                <motion.div variants={item} className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
                   <motion.div variants={item}>
                     <ControlPanels 
+                      selectedModel={selectedModel}
                       onPromptSelect={handlePromptChange}
                       onModelSelect={(value) => handleParameterChange(setSelectedModel, value)}
                       onAttackSelect={(value) => handleParameterChange(setSelectedAttack, value)}
@@ -168,7 +169,7 @@ export function Layout() {
                       />
                     </div>
                   </motion.div>
-                </motion.div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

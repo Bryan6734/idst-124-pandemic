@@ -17,22 +17,21 @@ import {
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState } from "react";
 
-
-export function Sidebar(){
-
+export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
 	const { theme, setTheme } = useTheme();
     return (
-        <aside className="inset-y fixed left-0 z-20 flex h-full flex-col border-r">
-					<div className="border-b p-2">
+        <aside className="inset-y fixed left-0 z-20 flex h-full w-16 flex-col border-r bg-background">
+					<div className="h-[57px] flex items-center justify-center border-b border-r-0">
 						<Button variant="outline" size="icon" aria-label="Home">
 							<Sword className="size-5 fill-foreground" />
 						</Button>
 					</div>
-					<nav className="grid gap-1 p-2">
+					<nav className="flex flex-col items-center gap-1 p-2">
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="rounded-lg bg-muted" aria-label="Control Panel">
+								<Button variant="ghost" size="icon" className="w-10 h-10 rounded-lg bg-muted" aria-label="Control Panel">
 									<SquareTerminal className="size-5" />
 								</Button>
 							</TooltipTrigger>
@@ -42,7 +41,7 @@ export function Sidebar(){
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="rounded-lg" aria-label="Papers">
+								<Button variant="ghost" size="icon" className="w-10 h-10 rounded-lg" aria-label="Papers">
 									<Book className="size-5" />
 								</Button>
 							</TooltipTrigger>
@@ -52,7 +51,7 @@ export function Sidebar(){
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="rounded-lg" aria-label="Settings">
+								<Button variant="ghost" size="icon" className="w-10 h-10 rounded-lg" aria-label="Settings" onClick={() => onNavigate('settings')}>
 									<Settings2 className="size-5" />
 								</Button>
 							</TooltipTrigger>
@@ -61,10 +60,10 @@ export function Sidebar(){
 							</TooltipContent>
 						</Tooltip>
 					</nav>
-					<nav className="mt-auto grid gap-1 p-2">
+					<nav className="mt-auto flex flex-col items-center gap-1 p-2">
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="mt-auto rounded-lg" aria-label="Help">
+								<Button variant="ghost" size="icon" className="w-10 h-10 rounded-lg" aria-label="Help">
 									<LifeBuoy className="size-5" />
 								</Button>
 							</TooltipTrigger>
@@ -74,7 +73,7 @@ export function Sidebar(){
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Button variant="ghost" size="icon" className="mt-auto rounded-lg" aria-label="Account">
+								<Button variant="ghost" size="icon" className="w-10 h-10 rounded-lg" aria-label="Account">
 									<SquareUser className="size-5" />
 								</Button>
 							</TooltipTrigger>
@@ -87,7 +86,7 @@ export function Sidebar(){
 								<Button
 									variant="ghost"
 									size="icon"
-									className="rounded-lg"
+									className="w-10 h-10 rounded-lg"
 									onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 									aria-label="Toggle theme"
 								>

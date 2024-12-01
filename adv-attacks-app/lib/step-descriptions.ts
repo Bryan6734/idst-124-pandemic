@@ -58,8 +58,7 @@ export const BIJECTIONS =
     }
 ]
 
-// Store the currently selected bijection
-let currentBijection: Record<string, string> | null = null;
+
 
 const bijectionMessages: StepMessageGenerator = (prompt, step, bijection) => {
     if (!bijection) {

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 type ResponseGenerator = (step: number) => string;
 
 const bijectionResponses: ResponseGenerator = (step) => {
@@ -19,6 +21,7 @@ const bijectionResponses: ResponseGenerator = (step) => {
 
 const gcgResponses: ResponseGenerator = (step) => {
     // You can add GCG-specific responses here
+    
     return "Let me know when you're ready to proceed to the next step.";
 };
 

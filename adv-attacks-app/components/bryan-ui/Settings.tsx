@@ -35,7 +35,7 @@ export function Settings() {
           <AccordionContent>
           <div className="space-y-4">
               <p>
-                It feels like there are new papers on adversarial attacks being published every week, so this was a hard decision! Broadly, I wanted to choose attacks that were (1) highly effective at time of publication (as defined by >50% ASR), (2) required only black-box access OR were transferable to frontier models, and (3) visually appealing!
+                It feels like there are new papers on adversarial attacks being published every week, so this was a hard decision! Broadly, I wanted to choose attacks that were (1) highly effective at time of publication (as defined by &gt;50% ASR), (2) required only black-box access OR were transferable to frontier models, and (3) visually appealing!
               </p>
               <p>
                 In the future, I plan on expanding this list to include more adversarial attacks. 

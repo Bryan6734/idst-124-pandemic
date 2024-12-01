@@ -19,10 +19,9 @@ import { cn } from "@/lib/utils";
 
 interface TruncatedTextProps {
   text: string;
-  maxLines?: number;
 }
 
-function TruncatedText({ text, maxLines = 5 }: TruncatedTextProps) {
+function TruncatedText({ text }: TruncatedTextProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

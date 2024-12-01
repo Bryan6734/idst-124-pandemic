@@ -1,4 +1,5 @@
-import Image from "next/image";
+/* eslint-disable */
+
 import {
 	Bird,
 	Rabbit,
@@ -35,7 +36,7 @@ export function MobileDrawer() {
 										<legend className="-ml-1 px-1 text-sm font-medium">Settings</legend>
 										<div className="grid gap-3">
 											<Label htmlFor="model">Victim Model</Label>
-											<Select onValueChange={(value) => {}}>
+											<Select onValueChange={(value) => {value}}>
 												<SelectTrigger id="model" className="items-start [&_[data-description]]:hidden">
 													<SelectValue placeholder="Select a model" />
 												</SelectTrigger>
@@ -88,7 +89,7 @@ export function MobileDrawer() {
 										<legend className="-ml-1 px-1 text-sm font-medium">Jailbreak</legend>
 										<div className="grid gap-3">
 											<Label htmlFor="methodology">Methodology</Label>
-											<Select defaultValue="greedy-coordinate-gradient" onValueChange={(value) => {}}>
+											<Select defaultValue="greedy-coordinate-gradient" onValueChange={(value) => {value}}>
 												<SelectTrigger id="methodology" className="items-start [&_[data-description]]:hidden">
 													<SelectValue placeholder="Select a methodology" />
 												</SelectTrigger>

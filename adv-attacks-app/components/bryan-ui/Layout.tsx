@@ -46,6 +46,14 @@ const item = {
   }
 };
 
+interface ChatRef {
+  updateStepMessage: (description: string, step: number, bijection?: Record<string, string>) => void;
+  clearAnimations: () => void;
+  killAnimations: () => void;
+  resetChat: () => void;
+  createSkeleton: () => void;
+}
+
 export function Layout() {
   const [currentPage, setCurrentPage] = useState('control-panel');
   const [selectedPrompt, setSelectedPrompt] = useState<string>();
@@ -53,7 +61,7 @@ export function Layout() {
   const [selectedAttack, setSelectedAttack] = useState<string>();
   const [isAttacking, setIsAttacking] = useState(false);
   const [showIntroModal, setShowIntroModal] = useState(false);
-  const chatRef = useRef<any>(null);
+  const chatRef = useRef<ChatRef>(null);
 
   const handleNavigate = (page: string) => {
     if (page === 'help') {

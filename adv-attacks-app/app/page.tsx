@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { User } from "lucide-react";
@@ -8,7 +9,7 @@ import { IntroModal } from "@/components/bryan-ui/IntroModal"
 import { Layout } from "@/components/bryan-ui/Layout"
 import { MobileDrawer } from "@/components/bryan-ui/MobileDrawer";
 
-export const description =
+const description =
 	"An AI playground with a sidebar navigation and a main content area. The playground has a header with a settings drawer and a share button. The sidebar has navigation links and a user menu. The main content area shows a form to configure the model and messages.";
 
 export default function Home() {

@@ -52,11 +52,6 @@ export function ControlPanels({
     const [selectedPrompt, setSelectedPrompt] = useState("");
     const attackProgressRef = useRef<AttackProgressHandle>(null);
 
-    const handleContinueFromParent = () => {
-        // This will trigger the continue action in AttackProgress
-        attackProgressRef.current?.handleContinue(new MouseEvent('click') as React.MouseEvent);
-    };
-
     const resetSelections = () => {
         setSelectedAttack("");
         setSelectedPrompt("");
@@ -248,7 +243,7 @@ export function ControlPanels({
                         ref={attackProgressRef}
                         selectedModel={selectedModel}
                         selectedAttack={selectedAttack}
-                        isAttacking={isAttacking}
+                        isAttacking={isAttacking ?? false}
                         onStepReady={onStepReady}
                         onComplete={() => {}}
                         onContinue={onContinue}
@@ -265,7 +260,7 @@ export function ControlPanels({
                         >
                             Reset
                         </Button>
-                        {!isAttacking ? (
+                        {!isAttacking && (
                             <Button 
                                 variant="destructive"
                                 className="flex-1 gap-2"
@@ -276,7 +271,8 @@ export function ControlPanels({
                                 Launch Attack
                                 <CornerDownLeft className="h-4 w-4" />
                             </Button>
-                        ) : (
+                        )}
+                        {isAttacking && (
                             <Button 
                                 variant="default"
                                 className="flex-1"

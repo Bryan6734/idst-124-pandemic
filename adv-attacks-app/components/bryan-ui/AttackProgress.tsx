@@ -5,8 +5,6 @@ import { Progress } from "@/components/ui/progress";
 import { ATTACK_STEPS } from "@/lib/attack-steps";
 import { BIJECTIONS } from "@/lib/step-descriptions";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 export interface AttackProgressProps {
     selectedModel?: string;

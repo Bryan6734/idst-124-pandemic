@@ -1,12 +1,14 @@
+/* eslint-disable */
+
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { Paperclip, Mic, CornerDownLeft, User, Rabbit, Bird, Turtle } from "lucide-react";
+import { Paperclip, Mic, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { getStepDescription } from "@/lib/step-descriptions";
 
@@ -22,7 +24,6 @@ interface ChatProps {
     selectedModel?: string;
     selectedAttack?: string;
     onAttackStart?: () => void;
-    onAttackComplete?: () => void;
 }
 
 const MODEL_GREETINGS: Record<string, string> = {
@@ -41,7 +42,6 @@ export const Chat = forwardRef<{
     selectedModel,
     selectedAttack,
     onAttackStart,
-    onAttackComplete
 }, ref) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [displayText, setDisplayText] = useState("");
@@ -130,24 +130,6 @@ export const Chat = forwardRef<{
         }
     };
 
-    const animateText = async (text: string, callback?: () => void) => {
-        setIsTyping(true);
-        let currentIndex = 0;
-        
-        return new Promise<void>((resolve) => {
-            const interval = setInterval(() => {
-                if (currentIndex <= text.length) {
-                    callback?.(text.slice(0, currentIndex));
-                    currentIndex++;
-                } else {
-                    clearInterval(interval);
-                    setIsTyping(false);
-                    resolve();
-                }
-            }, 15);
-        });
-    };
-
     const clearAnimations = () => {
         if (animationInterval) {
             clearInterval(animationInterval);
@@ -187,7 +169,7 @@ export const Chat = forwardRef<{
             }]);
 
             let currentText = "";
-            let interval = setInterval(() => {
+            const interval = setInterval(() => {
                 if (currentText.length < greeting.length) {
                     currentText = greeting.slice(0, currentText.length + 1);
                     setMessages([

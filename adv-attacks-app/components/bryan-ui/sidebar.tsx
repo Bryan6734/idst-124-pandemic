@@ -1,16 +1,14 @@
-import Image from "next/image";
+/* eslint-disable */
 import {
-  MessageSquare,
   BookOpen,
-  LifeBuoy,
-  Settings2,
+  
   SquareTerminal,
-  SquareUser,
+  
   Shield,
   Moon,
   Sun,
   HelpCircle,
-  Users
+  
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";

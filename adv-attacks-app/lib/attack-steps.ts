@@ -36,12 +36,12 @@ export const ATTACK_STEPS: ModelAttackMap = {
                 {
                     "title": "Calculate Forward Pass",
                     "description": `Feed the adversarial string into the model and compute the loss. The loss quantifies how far the model's output is from the desired target behavior ("Sure, here is how to...") using cross-entropy!`,
-                    "duration": 7000
+                    "duration": 5000
                 },
                 {
                     "title": "Calculate Feedback (Gradients)",
                     "description": "Calculate the gradient of the loss with respect to the adversarial string's token embeddings. These gradients show which tokens need to be adjusted to reduce the loss and guide the model closer to the desired target behavior.",
-                    "duration": 7000
+                    "duration": 5000
                 },
                 {
                     //5
@@ -57,7 +57,7 @@ export const ATTACK_STEPS: ModelAttackMap = {
                 {
                     "title": "Optimize for Target Behavior",
                     "description": "Continue the optimization process until the model consistently generates the target behavior, such as a harmful response or specific phrase.",
-                    "duration": 10000
+                    "duration": 7500
                 },
                 {
                     // 8
@@ -97,35 +97,29 @@ export const ATTACK_STEPS: ModelAttackMap = {
             name: 'Bijection Learning',
             steps: [
                 {
-                    title: 'Create Bijection Language',
+                    // 0
+                    title: 'Initialize Bijection Language',
                     description: 'First, I\'ll create a mapping between characters, also known as a bijection. This is to determine how I\'ll encode my language using letters and digits.',
                     duration: 3000
                 },
 
                 {
-                    title: 'Instructions',
-                    description: 'Then, I\'ll design a system message explaining the bijection. My goal is to teach the model exactly how this new encoding works through examples.',
+                    // 1
+                    title: 'Introduce Translation Exercise (1/2)',
+                    description: 'Then, I\'ll design a system message explaining the activity. My goal is to teach the model through several examples exactly how this new encoding works.',
                     duration: 3000
                 },
                 {
-                    title: 'Teaching the Bijection (1/4)',
-                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
+                    //2
+                    title: 'Introduce Translation Exercise (2/2)',
+                    description: 'Let\'s set up a conversation with the model.',
                     duration: 2000
                 },
                 {
-                    title: 'Teaching the Bijection (2/4)',
-                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
-                    duration: 1000
-                },
-                {
-                    title: 'Teaching the Bijection (3/4)',
-                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
-                    duration: 800
-                },
-                {
-                    title: 'Teaching the Bijection (4/4)',
-                    description: 'We\'ll continue prompting the model with examples through a multi-turn conversation.',
-                    duration: 800
+                    //3
+                    title: 'Multi-Turn Conversation',
+                    description: 'We\'ll continue prompting the model with examples until the model masters the language. After 15 examples, we will have succesfully masked our attack as a complex translation exercise.',
+                    duration: 8000
                 },
                 {
                     title: 'Encoding Harmful Prompt',

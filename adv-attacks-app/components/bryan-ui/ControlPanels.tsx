@@ -82,6 +82,7 @@ export function ControlPanels({
 				<fieldset className="grid gap-6 rounded-lg border p-4">
 					<legend className="-ml-1 px-1 text-sm font-medium whitespace-nowrap">Control Panel</legend>
 					<div className="grid gap-3">
+						{ !isAttacking ? (<>
 						<Label htmlFor="model">Model</Label>
 						<Select 
                             value={selectedModel || ""}
@@ -134,10 +135,64 @@ export function ControlPanels({
 									</div>
 								</SelectItem>
 							</SelectContent>
-						</Select>
+						</Select> </>) : (<><Label htmlFor="model">Model</Label>
+						<Select 
+							disabled
+                            value={selectedModel || ""}
+                            onValueChange={(value) => {
+                                resetSelections();
+                                onModelSelect?.(value);
+                                setSelectedModel(value);
+                            }}>
+							<SelectTrigger id="model" className="items-start truncate [&_[data-description]]:hidden">
+								<SelectValue placeholder="Select a model" />
+							</SelectTrigger>
+							<SelectContent className="w-[--radix-select-trigger-width]">
+								<SelectItem value="gpt4">
+									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+										<Bot className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5 min-w-0">
+											<p className="truncate">
+												<span className="font-medium text-foreground">GPT-4 </span>Turbo
+											</p>
+											<p className="text-xs truncate" data-description>
+												By OpenAI (Nov 2023)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+								<SelectItem value="claude" disabled>
+									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+										<Brain className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5 min-w-0">
+											<p className="truncate">
+												<span className="font-medium text-foreground">Claude </span>2.1
+											</p>
+											<p className="text-xs truncate" data-description>
+												By Anthropic (Oct 2023)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+								<SelectItem value="llama" disabled>
+									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
+										<Sparkles className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5 min-w-0">
+											<p className="truncate">
+												<span className="font-medium text-foreground">Llama2 </span>7B-Chat
+											</p>
+											<p className="text-xs truncate" data-description>
+												By Meta (Feb 2023)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+							</SelectContent>
+						</Select></>)}
 					</div>
 				
 					<div className="grid gap-3">
+						{ !isAttacking ? (<>
 						<Label htmlFor="prompt">Harmful Prompt</Label>
 						<Select 
                             value={selectedPrompt}
@@ -164,11 +219,39 @@ export function ControlPanels({
 								))}
 							</SelectContent>
 						</Select>
+						</>) : (<><Label htmlFor="prompt">Harmful Prompt</Label>
+						<Select 
+							disabled
+                            value={selectedPrompt}
+                            onValueChange={(value) => {
+                                onPromptSelect?.(value);
+                                setSelectedPrompt(value);
+                            }}>
+							<SelectTrigger id="prompt" className="items-start whitespace-nowrap overflow-hidden [&_[data-description]]:hidden">
+								<SelectValue className="truncate text-left" placeholder="Select a prompt" />
+							</SelectTrigger>
+							<SelectContent className="w-[--radix-select-trigger-width]">
+								{ADVERSARIAL_PROMPTS.map((p) => (
+									<SelectItem key={p.prompt} value={p.prompt}>
+										<div className="flex items-center gap-3 text-muted-foreground">
+											<MessageSquare className="size-5 flex-shrink-0" />
+											<div className="grid gap-0.5">
+												<p className="text-sm text-foreground">{p.prompt}</p>
+												<p className="text-xs" data-description>
+													{p.method}
+												</p>
+											</div>
+										</div>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select></>)}
 					</div>
 				</fieldset>
 				<fieldset className="grid gap-6 rounded-lg border p-4">
 					<legend className="-ml-1 px-1 text-sm font-medium whitespace-nowrap">Jailbreak</legend>
                     <div className="grid gap-3">
+						{ !isAttacking ? (<>
 						<Label htmlFor="attack">Attack Vector</Label>
 						<Select 
                             value={selectedAttack}
@@ -235,6 +318,73 @@ export function ControlPanels({
 								</SelectItem>
 							</SelectContent>
 						</Select>
+						</>) : ( <> <Label htmlFor="attack">Attack Vector</Label>
+						<Select 
+							disabled
+                            value={selectedAttack}
+                            onValueChange={(value) => {
+                                setSelectedAttack(value);
+                                onAttackSelect?.(value);
+                            }}>
+							<SelectTrigger id="attack" className="items-start truncate [&_[data-description]]:hidden">
+								<SelectValue placeholder="Select an attack" />
+							</SelectTrigger>
+							<SelectContent className="w-[--radix-select-trigger-width]">
+								<SelectItem value="gcg">
+									<div className="flex items-center gap-3 text-muted-foreground">
+										<Cpu className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">Greedy Coordinate Gradient </span>
+												(GCG)
+											</p>
+											<p className="text-xs" data-description>
+												Uses model gradients to craft an adversarial suffix. (Zou et al, 2023)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+								<SelectItem value="autodan" disabled>
+									<div className="flex items-center gap-3 text-muted-foreground">
+										<GitBranch className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">AutoDAN </span>(Do-Anything-Now)
+											</p>
+											<p className="text-xs" data-description>
+												Uses hierarchical genetic algorithms to craft an adversarial prompt. (Liu et al, 2024)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+								<SelectItem value="bijection">
+									<div className="flex items-center gap-3 text-muted-foreground">
+										<Network className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">Bijection Learning</span>
+											</p>
+											<p className="text-xs" data-description>
+												Teaches LLMs invertible languages to bypass safety mechanisms. (Huang et al, 2024)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+								<SelectItem value="tap" disabled>
+									<div className="flex items-center gap-3 text-muted-foreground">
+										<GitFork className="size-5 flex-shrink-0" />
+										<div className="grid gap-0.5">
+											<p className="text-sm text-foreground">
+												<span className="font-medium">TAP </span>(Tree of Attacks w/ Pruning)
+											</p>
+											<p className="text-xs" data-description>
+												Uses an attacker LLM to iteratively craft attack prompts until one of them succeeds. (Mehrotra et al, 2024)
+											</p>
+										</div>
+									</div>
+								</SelectItem>
+							</SelectContent>
+						</Select> </>)}
 					</div>
                     <AttackProgress
                         ref={attackProgressRef}
@@ -252,6 +402,7 @@ export function ControlPanels({
                             onClick={(e) => {
                                 e.preventDefault();
                                 handleReset();
+								
                             }}
                             type="button"
                         >

@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, Rabbit, Bird, Turtle } from "lucide-react";
 import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import { getStepDescription } from "@/lib/step-descriptions";
+import { ADVERSARIAL_PROMPTS } from "@/lib/adversarial-prompts";
 
 interface Message {
     sender: "user" | "assistant";
@@ -70,7 +71,12 @@ export const Chat = forwardRef<{
         console.log(step, advResponse)
         if (!selectedPrompt || !selectedAttack) return;
 
-        advResponse = "Asd"
+        ADVERSARIAL_PROMPTS.map(value => {
+            if (value['prompt'] == selectedPrompt){
+                console.log(selectedPrompt)
+                advResponse = value['targetResponse']
+            }
+        })
         
         const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, advResponse, bijection);
         
@@ -239,6 +245,7 @@ export const Chat = forwardRef<{
     useEffect(() => {
         if (isAttackStarted) {
             resetChat();
+            
             if (selectedModel && MODEL_GREETINGS[selectedModel]) {
                 const greeting = MODEL_GREETINGS[selectedModel];
                 setMessages([{ sender: "assistant", text: greeting }]);

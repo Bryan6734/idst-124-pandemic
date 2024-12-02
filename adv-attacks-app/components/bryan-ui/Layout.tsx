@@ -47,7 +47,7 @@ const item = {
 };
 
 interface ChatRef {
-  updateStepMessage: (description: string, step: number, bijection?: Record<string, string>) => void;
+  updateStepMessage: (description: string, step: number, bijection?: Record<string, string>, advResponse?: any) => void;
   clearAnimations: () => void;
   killAnimations: () => void;
   resetChat: () => void;
@@ -143,9 +143,9 @@ export function Layout() {
                         setIsAttacking(true);
                         chatRef.current?.createSkeleton();
                       }}
-                      onStepReady={(desc, step, bijection) => {
+                      onStepReady={(desc, step, bijection, advResponse) => {
                         if (!isAttacking) return;
-                        chatRef.current?.updateStepMessage(desc, step, bijection);
+                        chatRef.current?.updateStepMessage(desc, step, bijection, advResponse);
                       }}
                       onContinue={() => {
                         if (!isAttacking) return;

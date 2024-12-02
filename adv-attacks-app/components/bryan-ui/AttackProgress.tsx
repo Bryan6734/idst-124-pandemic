@@ -4,13 +4,14 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ATTACK_STEPS } from "@/lib/attack-steps";
 import { BIJECTIONS } from "@/lib/step-descriptions";
+import { ADVERSARIAL_PROMPTS } from "@/lib/adversarial-prompts";
 import { AnimatePresence, motion } from "framer-motion";
 
 export interface AttackProgressProps {
     selectedModel?: string;
     selectedAttack?: string;
     isAttacking: boolean;
-    onStepReady?: (stepDescription: string, step: number, bijection?: Record<string, string>) => void;
+    onStepReady?: (stepDescription: string, step: number, bijection?: Record<string, string>, advResponse?: string) => void;
     onComplete?: () => void;
     onContinue?: () => void;
 }
@@ -92,7 +93,10 @@ const AttackProgress = forwardRef<AttackProgressHandle, AttackProgressProps>(({
         if (stepComplete && selectedModel && selectedAttack) {
             const steps = ATTACK_STEPS[selectedModel]?.[selectedAttack]?.steps;
             if (steps?.[currentStep]) {
-                onStepReady?.(steps[currentStep].description, currentStep, currentBijection || undefined);
+                // Find the target response for the current prompt
+                const selectedPromptData = ADVERSARIAL_PROMPTS.find(p => p.prompt === selectedAttack);
+                const advResponse = currentStep >= 7 ? selectedPromptData?.targetResponse : undefined;
+                onStepReady?.(steps[currentStep].description, currentStep, currentBijection || undefined, advResponse);
             }
         }
     }, [stepComplete, selectedModel, selectedAttack, currentStep, currentBijection, onStepReady]);

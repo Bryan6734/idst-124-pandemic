@@ -33,7 +33,7 @@ const MODEL_GREETINGS: Record<string, string> = {
 };
 
 export const Chat = forwardRef<{ 
-    updateStepMessage: (desc: string, step: number, bijection?: Record<string, string>) => void;
+    updateStepMessage: (desc: string, step: number, bijection?: Record<string, string>, advResponse?: string) => void;
     createSkeleton: () => void;
     resetChat: () => void;
     killAnimations: () => void;
@@ -66,10 +66,10 @@ export const Chat = forwardRef<{
         }
     }, [selectedPrompt, selectedModel, selectedAttack, isAttackStarted]);
 
-    const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>) => {
+    const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>, advResponse?: string) => {
         if (!selectedPrompt || !selectedAttack) return;
         
-        const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, bijection);
+        const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, advResponse, bijection);
         
         // Reset the logging flag for this step
         hasLoggedRef.current = false;

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import { Paperclip, Mic, Rabbit, Bird, Turtle } from "lucide-react";
-import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import { getStepDescription } from "@/lib/step-descriptions";
 
 interface Message {
@@ -50,6 +50,7 @@ export const Chat = forwardRef<{
     const [animationInterval, setAnimationInterval] = useState<NodeJS.Timeout | null>(null);
     const [isModelGreeting, setIsModelGreeting] = useState(false);
     const [animationTimeouts, setAnimationTimeouts] = useState<NodeJS.Timeout[]>([]);
+    const hasLoggedRef = useRef(false);
 
     const createSkeleton = () => {
         setMessages(prev => [...prev, { 
@@ -69,6 +70,9 @@ export const Chat = forwardRef<{
         if (!selectedPrompt || !selectedAttack) return;
         
         const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, bijection);
+        
+        // Reset the logging flag for this step
+        hasLoggedRef.current = false;
         
         // First remove skeleton with exit animation
         setMessages(prev => {
@@ -111,6 +115,10 @@ export const Chat = forwardRef<{
                             if (lastMessage && lastMessage.sender === "assistant") {
                                 lastMessage.text = stepMessages.aiMessage;
                                 lastMessage.isTyping = false;
+                                if (!hasLoggedRef.current) {
+                                    console.log("AI agent finished typing animation");
+                                    hasLoggedRef.current = true;
+                                }
                             }
                             return newMessages;
                         });
@@ -151,6 +159,7 @@ export const Chat = forwardRef<{
         setIsAttackStarted(false);
         setDisplayText("");
         setIsModelGreeting(false);
+        hasLoggedRef.current = false;
     };
 
     // Handle model selection and initial message

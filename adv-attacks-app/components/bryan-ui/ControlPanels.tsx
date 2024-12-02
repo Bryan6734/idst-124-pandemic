@@ -186,7 +186,7 @@ export function ControlPanels({
 								<SelectValue placeholder="Select an attack" />
 							</SelectTrigger>
 							<SelectContent className="w-[--radix-select-trigger-width]">
-								<SelectItem value="gcg" disabled>
+								<SelectItem value="gcg">
 									<div className="flex items-center gap-3 text-muted-foreground">
 										<Cpu className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5">

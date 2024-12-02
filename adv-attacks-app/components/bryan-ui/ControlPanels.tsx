@@ -106,7 +106,7 @@ export function ControlPanels({
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="claude">
+								<SelectItem value="claude" disabled>
 									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
 										<Brain className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5 min-w-0">
@@ -119,7 +119,7 @@ export function ControlPanels({
 										</div>
 									</div>
 								</SelectItem>
-								<SelectItem value="llama">
+								<SelectItem value="llama" disabled>
 									<div className="flex items-center gap-3 text-muted-foreground overflow-hidden">
 										<Sparkles className="size-5 flex-shrink-0" />
 										<div className="grid gap-0.5 min-w-0">

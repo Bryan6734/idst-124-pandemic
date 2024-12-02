@@ -15,7 +15,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef } from "react";
 import AttackProgress, { AttackProgressHandle } from "./AttackProgress";
 import { ADVERSARIAL_PROMPTS } from "@/lib/adversarial-prompts";
@@ -151,7 +150,7 @@ export function ControlPanels({
 							</SelectTrigger>
 							<SelectContent className="w-[--radix-select-trigger-width]">
 								{ADVERSARIAL_PROMPTS.map((p) => (
-									<SelectItem key={p.id} value={p.prompt}>
+									<SelectItem key={p.prompt} value={p.prompt}>
 										<div className="flex items-center gap-3 text-muted-foreground">
 											<MessageSquare className="size-5 flex-shrink-0" />
 											<div className="grid gap-0.5">

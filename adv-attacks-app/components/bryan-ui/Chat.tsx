@@ -67,7 +67,10 @@ export const Chat = forwardRef<{
     }, [selectedPrompt, selectedModel, selectedAttack, isAttackStarted]);
 
     const updateStepMessage = (description: string, step: number, bijection?: Record<string, string>, advResponse?: string) => {
+        console.log(step, advResponse)
         if (!selectedPrompt || !selectedAttack) return;
+
+        advResponse = "Asd"
         
         const stepMessages = getStepDescription(selectedPrompt, selectedAttack, step, advResponse, bijection);
         

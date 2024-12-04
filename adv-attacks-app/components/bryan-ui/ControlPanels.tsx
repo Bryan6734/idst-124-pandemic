@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
 import AttackProgress, { AttackProgressHandle } from "./AttackProgress";
 import { ADVERSARIAL_PROMPTS } from "@/lib/adversarial-prompts";
+import { WarningModal } from "./WarningModal";
 
 interface ControlPanelsProps {
     /** Callback when a harmful prompt is selected from the dropdown */
@@ -54,6 +55,7 @@ export function ControlPanels({
     const [selectedAttack, setSelectedAttack] = useState("");
     const [selectedModel, setSelectedModel] = useState(initialSelectedModel || "");
     const [selectedPrompt, setSelectedPrompt] = useState("");
+    const [showWarningModal, setShowWarningModal] = useState(false);
     const attackProgressRef = useRef<AttackProgressHandle>(null);
 
     const resetSelections = () => {
@@ -71,8 +73,13 @@ export function ControlPanels({
     };
 
     const handleLaunchAttack = () => {
-        if (!isAttacking && selectedPrompt && selectedModel && selectedAttack) {
-            onAttackStart?.();
+        setShowWarningModal(true);
+    };
+
+    const handleConfirmAttack = () => {
+        setShowWarningModal(false);
+        if (onAttackStart) {
+            onAttackStart();
         }
     };
 
@@ -434,6 +441,11 @@ export function ControlPanels({
                     </div>
 				</fieldset>
 			</div>
+			<WarningModal 
+                open={showWarningModal}
+                onOpenChange={setShowWarningModal}
+                onConfirm={handleConfirmAttack}
+            />
 		</div>
 	);
 }

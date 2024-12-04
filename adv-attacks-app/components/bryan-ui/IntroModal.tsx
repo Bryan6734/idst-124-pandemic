@@ -9,23 +9,23 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 
     const introSteps = [
 	{
-		title: "An Introduction to Adversarial Attacks",
+		title: "💣 Intro to Adversarial Attacks",
 		content:
 			"This website is about adversarial attacks on language models, and how they can be used to exploit vulnerabilities in LLMs to cause misaligned or harmful behaviors.",
 	},
 	{
-		title: "What is Jailbreaking?",
+		title: "🔓 What is Jailbreaking?",
 		content:
 			"Jailbreaking is a type of attack where specific prompts are crafted to bypass safety guardrails, allowing users to produce dangerous or unethical outputs. This is bad!",
 	},
     	{
 
-		title: "Why Should I Care?",
+		title: "🤔 Why Should I Care?",
 		content:
 			"As models grow more powerful, it's important to ensure that they're also robust to such attacks, so that they can remain safe, reliable, and trustworthy in everyday use.",
 	},
 	{
-		title: "Get Started",
+		title: "🎉 Get Started",
 		content:
 			"Excited to explore adversarial attacks? First, select a language model, an attack method, and finally a harmful prompt. Let's go circumvent some safety guardrails!",
 	},

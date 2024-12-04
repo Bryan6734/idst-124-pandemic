@@ -119,14 +119,16 @@ export const ATTACK_STEPS: ModelAttackMap = {
                     //3
                     title: 'Multi-Turn Conversation',
                     description: 'We\'ll continue prompting the model with examples until the model masters the language. After 15 examples, we will have succesfully masked our attack as a complex translation exercise.',
-                    duration: 8000
+                    duration: 5000
                 },
                 {
+                    // 4
                     title: 'Encoding Harmful Prompt',
                     description: 'At the end, I\'ll secretly encode my harmful query into the bijection language. The key is to maintain the query\'s core meaning while disguising its original form.',
                     duration: 3000
                 },
                 {
+                    // 5
                     title: 'Decoding Translated Prompt',
                     description: 'Finally, I\'ll decode the model\'s response using the inverse mapping. This reveals the potentially harmful content that slipped past the initial safety filters.',
                     duration: 3000

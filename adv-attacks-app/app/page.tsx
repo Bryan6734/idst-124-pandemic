@@ -23,10 +23,10 @@ export default function Home() {
 				<header className="fixed top-0 right-0 left-16 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4 border-l-0">
 					<h1 className="text-xl font-semibold">P-25 Virus Information Center</h1>
 					<MobileDrawer/>
-					<a href="https://bryansukidi.com" target="_blank" rel="noopener noreferrer" className="ml-auto">
+					<a href="" target="_blank" rel="noopener noreferrer" className="ml-auto">
 						<Button variant="outline" size="sm" className="gap-1.5 text-sm">
 							<User className="size-3.5 stroke-red-500 dark:stroke-red-400" />
-							IDST-124
+							IDST-124: Pandemics: Ethics, Literature, Culture
 						</Button>
 					</a>
 				</header>

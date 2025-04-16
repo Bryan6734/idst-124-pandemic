@@ -4,6 +4,7 @@ import { Settings } from './Settings';
 import { MapControls } from './MapControls';
 import { Map, MapRef } from './Map';
 import { Papers } from './Papers';
+import { Emails } from './Emails';
 import { AnimatePresence, motion } from "framer-motion";
 import { IntroModal } from './IntroModal';
 
@@ -69,6 +70,7 @@ export function Layout() {
     if (mapRef.current) {
       mapRef.current.resetMap();
     }
+    setCurrentPage('control-panel'); // Optionally reset to map view
   };
 
   const handleDateChange = (date: { year: number; month: number }) => {
@@ -84,7 +86,7 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar onNavigate={handleNavigate} />
+      <Sidebar selectedPage={currentPage} onNavigate={handleNavigate} />
       <main className="flex-1 ml-16 mt-[57px]">
         <div className="flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
@@ -118,7 +120,21 @@ export function Layout() {
                 </motion.div>
               </motion.div>
             )}
-            {currentPage !== 'settings' && currentPage !== 'papers' && (
+            {currentPage === 'emails' && (
+              <motion.div
+                key="emails"
+                variants={container}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+                className="space-y-4"
+              >
+                <motion.div variants={item}>
+                  <Emails />
+                </motion.div>
+              </motion.div>
+            )}
+            {currentPage !== 'settings' && currentPage !== 'papers' && currentPage !== 'emails' && (
               <motion.div
                 key="control-panel"
                 variants={container}

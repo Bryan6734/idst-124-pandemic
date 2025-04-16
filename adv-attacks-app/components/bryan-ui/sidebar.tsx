@@ -9,24 +9,20 @@ import {
   Sun,
   HelpCircle,
   Info,
+  Mail, // Added for Emails
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState } from "react";
 
-export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
+// Define props for Sidebar
+interface SidebarProps {
+  selectedPage: string;
+  onNavigate: (page: string) => void;
+}
+
+export function Sidebar({ selectedPage, onNavigate }: SidebarProps) {
   const { theme, setTheme } = useTheme();
-  const [selectedPage, setSelectedPage] = useState('control-panel');
-
-  const handleNavigate = (page: string) => {
-    if (page === 'help') {
-      onNavigate('help');
-      return;
-    }
-    setSelectedPage(page);
-    onNavigate(page);
-  };
 
   return (
     <aside className="inset-y fixed left-0 z-20 flex h-full w-16 flex-col border-r bg-background">
@@ -48,7 +44,7 @@ export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
               size="icon" 
               className={`w-10 h-10 rounded-lg ${selectedPage === 'control-panel' ? 'bg-muted' : ''}`}
               aria-label="Chat"
-              onClick={() => handleNavigate('control-panel')}
+              onClick={() => onNavigate('control-panel')}
             >
               <SquareTerminal className="size-5" />
             </Button>
@@ -64,7 +60,7 @@ export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
               size="icon" 
               className={`w-10 h-10 rounded-lg ${selectedPage === 'papers' ? 'bg-muted' : ''}`}
               aria-label="Information"
-              onClick={() => handleNavigate('papers')}
+              onClick={() => onNavigate('papers')}
             >
               <Info className="size-5" />
             </Button>
@@ -78,9 +74,25 @@ export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
             <Button 
               variant="ghost" 
               size="icon" 
+              className={`w-10 h-10 rounded-lg ${selectedPage === 'emails' ? 'bg-muted' : ''}`}
+              aria-label="Emails"
+              onClick={() => onNavigate('emails')}
+            >
+              <Mail className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={5}>
+            Emails
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
               className={`w-10 h-10 rounded-lg ${selectedPage === 'settings' ? 'bg-muted' : ''}`}
               aria-label="FAQ"
-              onClick={() => handleNavigate('settings')}
+              onClick={() => onNavigate('settings')}
             >
               <HelpCircle className="h-5 w-5" />
             </Button>
@@ -98,7 +110,7 @@ export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
               size="icon" 
               className="w-10 h-10 rounded-lg"
               aria-label="Help"
-              onClick={() => handleNavigate('help')}
+              onClick={() => onNavigate('help')}
             >
               <HelpCircle className="size-5" />
             </Button>

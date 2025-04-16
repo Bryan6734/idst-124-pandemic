@@ -5,9 +5,26 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card"; 
 import { AlertTriangle, Biohazard, ShieldCheck, Stethoscope, TestTube, Users, Info, Mail, Globe, HelpCircle, Landmark } from "lucide-react";
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts'; 
+import { 
+  ResponsiveContainer, 
+  LineChart, 
+  CartesianGrid, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Legend, 
+  Line, 
+  BarChart, 
+  Bar, 
+  AreaChart, 
+  Area, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from 'recharts'; 
 import Image from 'next/image';
 
 import mask1 from '../../lib/masks-1.png';
@@ -160,6 +177,100 @@ const CONSUMER_ACCESS_COLORS = {
 // Overall Info Quality Data (derived from previous breakdown)
 const overallMisinfoPercent = 72;
 const overallFactualPercent = 18;
+
+// --- Bee Population Data ---
+// Define Bee Species and Colors
+const beeSpecies = [
+  'Apis Mellifera', // Honeybee
+  'Bombus Impatiens', // Bumblebee
+  'Xylocopa Virginica', // Carpenter Bee
+  'Megachile Rotundata', // Leafcutter Bee
+  'Osmia Lignaria', // Mason Bee
+  'Halictus Ligatus', // Sweat Bee
+  'Andrena Milwaukeensis', // Mining Bee
+  'Lasioglossum Corydalum' // Small Sweat Bee
+];
+
+// Interface for Bee Data objects
+interface BeeDataPoint {
+  year: string;
+  [speciesName: string]: number | string; // Allows dynamic species keys
+}
+
+const beeColors = [
+  '#facc15', // yellow-400
+  '#f59e0b', // amber-500
+  '#eab308', // yellow-500
+  '#fbbf24', // amber-400
+  '#fde047', // yellow-300
+  '#fb923c', // orange-400
+  '#ca8a04', // yellow-600
+  '#d97706', // amber-600
+];
+
+// Generate Bee Population Data for Multiple Species (2024-2030 with staggered variance)
+const generateBeeData = () => {
+  const years = Array.from({ length: 7 }, (_, i) => 2024 + i); // 2024 to 2030
+  const data: BeeDataPoint[] = years.map(year => ({ year: year.toString() }));
+  const earlyImpactSpeciesCount = 4; // First 4 species are hit early
+
+  beeSpecies.forEach((species, index) => {
+    let currentPopulation = 100;
+    const isEarlyImpact = index < earlyImpactSpeciesCount;
+    // Define target minimums - lower for early impact
+    const minPopulationTarget = isEarlyImpact ? (20 + Math.random() * 15) : (30 + Math.random() * 20); // Early: 20-35, Later: 30-50
+
+    data.forEach((point, yearIndex) => {
+      const currentYear = years[yearIndex];
+
+      if (currentYear === 2024) {
+        point[species] = 100;
+        currentPopulation = 100;
+        return; // Skip calculation for the first year
+      }
+
+      let declineRate = 1.0; // Assume stable if no other factors apply
+      let volatilityFactor = 0.02; // Base volatility for stable periods
+
+      // Determine decline rate based on group and year
+      if (isEarlyImpact) {
+        // Early group declines throughout
+        declineRate = 0.60 + Math.random() * 0.20; // Heavier decline: 60-80% of previous year
+        volatilityFactor = 0.05 + Math.random() * 0.05;
+      } else if (currentYear >= 2027) {
+        // Later group declines from 2027 onwards
+        declineRate = 0.65 + Math.random() * 0.20; // Significant decline: 65-85% of previous year
+        volatilityFactor = 0.06 + Math.random() * 0.06;
+      } else {
+        // Later group before 2027 - relatively stable
+        declineRate = 0.97 + Math.random() * 0.05; // Slight fluctuation around 100%: 97-102%
+      }
+
+      // Apply decline and volatility
+      const randomFluctuation = (Math.random() - 0.5) * 2 * volatilityFactor; // Symmetric fluctuation
+      currentPopulation *= (declineRate + randomFluctuation);
+      
+      // Apply a floor based on the target minimum, preventing instant drops to target
+      let effectiveFloor = 5; // Absolute minimum
+      if(isEarlyImpact || currentYear >= 2027) {
+        // Gradually approach the target floor over the decline period
+        const startYear = isEarlyImpact ? 2024 : 2027;
+        const declineDuration = 2030 - startYear;
+        const yearsIntoDecline = currentYear - startYear;
+        const progress = declineDuration > 0 ? yearsIntoDecline / declineDuration : 1;
+        // Interpolate between current pop and target floor based on progress
+        effectiveFloor = Math.max(effectiveFloor, currentPopulation * (1-progress) + minPopulationTarget * progress);
+      }
+      
+      // Set the value, ensuring bounds (5 to 100)
+      currentPopulation = Math.max(5, Math.min(100, Math.round(Math.max(effectiveFloor, currentPopulation))));
+      point[species] = currentPopulation;
+    });
+  });
+
+  return data;
+};
+const multiSpeciesBeeData = generateBeeData();
 
 // --- End Distribution Data Generation ---
 
@@ -380,6 +491,66 @@ export function Papers() {
                 </CardContent>
               </Card>
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-10 gap-6 mb-6">
+            {/* Bee Population Decline Chart */}
+            <Card className="md:col-span-10"> {/* Make chart span full width */}
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">🐝 Ecosystem Under Stress: Bee Species Population Trends</CardTitle>
+                <CardDescription>Projected Population Index (2024-2030, Relative to 2024 Baseline)</CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart data={multiSpeciesBeeData} margin={{ top: 5, right: 30, left: 0, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} />
+                    <XAxis 
+                      dataKey="year" 
+                      padding={{ left: 10, right: 10 }}
+                      stroke="hsl(var(--muted-foreground))" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(value) => `${value}%`}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        borderColor: 'hsl(var(--border))',
+                        color: 'hsl(var(--foreground))',
+                        borderRadius: '0.5rem',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                       }}
+                      labelFormatter={(label) => `Year: ${label}`}
+                      formatter={(value: number | string, name: string) => [`${value}%`, name]}
+                      itemSorter={(item) => beeSpecies.indexOf(item.dataKey as string)} // Ensure consistent order
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36} 
+                      wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                      formatter={(value) => <span style={{ color: 'hsl(var(--muted-foreground))' }}>{value}</span>}
+                    />
+                    {beeSpecies.map((species, index) => (
+                      <Line 
+                        key={species}
+                        type="monotone" 
+                        dataKey={species} 
+                        stroke={beeColors[index % beeColors.length]} 
+                        strokeWidth={1.5} 
+                        dot={false} 
+                        activeDot={{ r: 5, strokeWidth: 1 }}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

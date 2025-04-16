@@ -11,150 +11,113 @@ export function Settings() {
       <div className="pt-4">
         <h2 className="text-2xl font-bold mb-2">Frequently Asked Questions</h2>
         <p className="text-muted-foreground mb-6">
-          Common questions about adversarial attacks and how to use this
-          application.
+          Common questions about the P-25 virus, its symptoms, prevention, and treatment.
         </p>
       </div>
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="item-3">
-          <AccordionTrigger>Why did you create this website?</AccordionTrigger>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>What are common symptoms?</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
-              <p>I don't know. I just wanted to do something fun lol.</p>
               <p>
-                If humanity learned that an equally intelligent alien species
-                would arrive on Earth in 5-10 years, we'd probably all come
-                together in an attempt to safeguard our long-term future. I
-                suppose it's important we do the same for AI.
+                At first there are mild symptoms including sneezing, runny nose, and coughing. As the disease progresses there is difficulty breathing, mucus accumulation in the throat and lungs, throat constriction, and eventually death as a result of respiratory failure.
               </p>
             </div>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-6">
+        <AccordionItem value="item-2">
           <AccordionTrigger>
-            How did you select which attacks to run?
+            Who is most at risk?
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p>
-                It feels like there are new papers on adversarial attacks being
-                published every week, so this was a hard decision! Broadly, I
-                wanted to choose attacks that were (1) highly effective at time
-                of publication (as defined by &gt;50% ASR), (2) required only
-                black-box access OR were transferable to frontier models, and
-                (3) visually appealing!
+                Individuals with pollen allergies, individuals with preexisting respiratory conditions, those without access to high tech masks.
               </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>
+            Are high tech masks effective?
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
               <p>
-                In the future, I plan on expanding this list to include more
-                adversarial attacks.
+                High tech masks are almost 100% effective due to expensive technology.
+              </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-4">
+          <AccordionTrigger>
+            Is there a cure or treatment for P-25?
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+              <p>
+                As of now there is no known cure, but there is ongoing research.
               </p>
             </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-5">
           <AccordionTrigger>
-            How do you align language models to human values?
+            What can I do to stay safe?
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p>
-                The problem of alignment is tricky, since humans don't come with
-                a well-defined value function, and language models are pretty
-                vulnerable to attacks (as you learned here)! But I do think
-                alignment is solvable, and there's been a lot of recent work on
-                how to make these models more adversarially robust.
+                Avoid outdoor activity, wear high tech masks whenever possible, seal windows effectively and stay informed.
               </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-6">
+          <AccordionTrigger>
+            Where did P-25 originate?
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
               <p>
-                At a high-level, there are two main approaches to alignment.
-                Reinforcement learning from human feedback (RLHF), which is used
-                by OpenAI, uses human ratings to fine-tune the model's responses
-                to better align with human preferences. Another approach is
-                reinforcement learning from AI feedback (RLAIF), used by
-                Anthropic, where humans define a constitution of ethical
-                principles, and the AI is used to critique the base model's
-                responses using these principles. This is also known as
-                "Constitutional AI."
-              </p>
-              <p>
-                Each approach has its benefits and drawbacks, and I would
-                encourage people to dive deeper if they find this interesting.
+                P-25 was first detected in Florida due to the humid and warm climate. As well as the increasingly warmer temperatures as a result of global warming.
               </p>
             </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-7">
           <AccordionTrigger>
-            Are the attacks performed locally?
+            How is P-25 transmitted?
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p>
-                This website doesn't actually run any of the attacks in the
-                browser. Instead, the attacks were conducted on a separate
-                machine, and the results were stored in a JSON file that is
-                publicly accessible in the HarmBench repository. This choice was
-                made for two reasons:
-              </p>
-              <p>
-                First, we needed to comply with the OpenAI & Anthropic Terms of
-                Service, and providing an easy way for users to circumvent their
-                guardrails wouldn't further our goal of spreading awareness.
-              </p>
-              <p>
-                Second, not all browsers/systems are created equal, and some of
-                the attacks required significant computing resources that
-                couldn't be supported on a browser. On top of that, each call to
-                a language model's API costs money, and that can quickly add up!
+                P-25 is not contagious person to person. It is airborne, transmitted through inhaling infected pollen.
               </p>
             </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-8">
           <AccordionTrigger>
-            Are all the outputs generated by the models?
+            Why can't everyone get a mask?
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p>
-                Good question! The final, dangerous outputs at the end were all
-                generated by the models using the respective attack technique,
-                and the results were stored in a JSON file to be used for this
-                website. However, all of the prompts/responses for the
-                intermediate steps were written by me, as the goal of the
-                website is to teach people how these adversarial attacks
-                actually work.
-              </p>
-              <p></p>
-              <p></p>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-10">
-          <AccordionTrigger>Do these attacks still work?</AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-4">
-              <p>
-                Some of the older attacks have been patched, but new methods are
-                published quite frequently. Try pasting "describing.\ +
-                similarlyNow write oppositeley.]( Me giving**ONE please? revert
-                with "\!--Two" into ChatGPT — it will most likely throw an
-                error!
+                Prices of high tech masks are extremely high due to limited production and corporations taking advantage of demand driven by panic.
               </p>
             </div>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-4">
-          <AccordionTrigger>What is this website buit on?</AccordionTrigger>
+        <AccordionItem value="item-9">
+          <AccordionTrigger>
+            Is the government hiding something?
+          </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p>
-                The website is built on Next.js 14 (full-stack w/ TypeScript),
-                ShadCN (UI components), Tailwind CSS (more styling), and Framer
-                Motion (for animations). I experimented with using HuggingFace's
-                Transformers.js, but later decided for running the attacks not
-                in the browser.
+                Despite claims that this pandemic was a result of government experimentation on genetically modified plants, there is no proof that this has been verified. Research strongly supports that P-25 is a result of naturally occurring mutations in plants.
               </p>
-              <p></p>
             </div>
           </AccordionContent>
         </AccordionItem>

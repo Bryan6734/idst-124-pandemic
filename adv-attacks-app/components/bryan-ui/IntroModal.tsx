@@ -9,25 +9,25 @@ function IntroModal({ showIntroModal, setShowIntroModal}){
 
     const introSteps = [
 	{
-		title: "💣 Intro to Adversarial Attacks",
+		title: "⚠️ The P-25 Virus",
 		content:
-			"This website is about adversarial attacks on language models, and how they can be used to exploit vulnerabilities in LLMs to cause misaligned or harmful behaviors.",
+			"Welcome to the P-25 Virus Information Center. P-25 is a disease in humans caused by inhalation of pollen containing the mutated P-25 gene.",
 	},
 	{
-		title: "🔓 What is Jailbreaking?",
+		title: "🧬 Genetic Variant",
 		content:
-			"Jailbreaking is a type of attack where specific prompts are crafted to bypass safety guardrails, allowing users to produce dangerous or unethical outputs. This is bad!",
+			"Pollen cells containing this gene elicit an unusually strong immune response in humans compared to traditional pollen, leading to the severe symptoms seen in patients with the disease. In some people, the immune response is potent enough to cause their own death.",
 	},
     	{
 
-		title: "🤔 Why Should I Care?",
+		title: "🐝 The Spread",
 		content:
-			"As models grow more powerful, it's important to ensure that they're also robust to such attacks, so that they can remain safe, reliable, and trustworthy in everyday use.",
+			"P-25 spreads among plants as bees carry the pollen between them and the plants reproduce, passing the gene to their offspring. It infects humans as they inhale the excess pollen in the air.",
 	},
 	{
-		title: "🎉 Get Started",
+		title: "🌍 Global Severity",
 		content:
-			"Excited to explore adversarial attacks? First, select a language model, an attack method, and finally a harmful prompt. Let's go circumvent some safety guardrails!",
+			"Unfortunately, because increasing temperatures signal male plants to release pollen, global warming has exacerbated this issue, which has increased the severity of the epidemic. Let's explore!",
 	},
 ];
 

@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { Sidebar } from './sidebar';
 import { Settings } from './Settings';
-import { ControlPanels } from './ControlPanels';
-import { Chat } from './Chat';
+import { MapControls } from './MapControls';
+import { Map, MapRef } from './Map';
 import { Papers } from './Papers';
 import { AnimatePresence, motion } from "framer-motion";
 import { IntroModal } from './IntroModal';
@@ -46,22 +46,14 @@ const item = {
   }
 };
 
-interface ChatRef {
-  updateStepMessage: (description: string, step: number, bijection?: Record<string, string>, advResponse?: any) => void;
-  clearAnimations: () => void;
-  killAnimations: () => void;
-  resetChat: () => void;
-  createSkeleton: () => void;
-}
+// No longer need ChatRef interface
 
 export function Layout() {
   const [currentPage, setCurrentPage] = useState('control-panel');
-  const [selectedPrompt, setSelectedPrompt] = useState<string>();
-  const [selectedModel, setSelectedModel] = useState<string>();
-  const [selectedAttack, setSelectedAttack] = useState<string>();
-  const [isAttacking, setIsAttacking] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<{ year: number; month: number }>({ year: 2024, month: 1 });
+  const [selectedRegion, setSelectedRegion] = useState<string>('global');
   const [showIntroModal, setShowIntroModal] = useState(false);
-  const chatRef = useRef<ChatRef>(null);
+  const mapRef = useRef<MapRef>(null);
 
   const handleNavigate = (page: string) => {
     if (page === 'help') {
@@ -72,18 +64,22 @@ export function Layout() {
   };
 
   const resetAllStates = () => {
-    setSelectedPrompt(undefined);
-    setSelectedModel(undefined);
-    setSelectedAttack(undefined);
-    setIsAttacking(false);
+    setSelectedDate({ year: 2024, month: 1 });
+    setSelectedRegion('global');
+    if (mapRef.current) {
+      mapRef.current.resetMap();
+    }
   };
 
-  const handleParameterChange = (setter: (value: string) => void, value: string) => {
-    setter(value);
+  const handleDateChange = (date: { year: number; month: number }) => {
+    setSelectedDate(date);
+    if (mapRef.current) {
+      mapRef.current.updateDate(date);
+    }
   };
 
-  const handlePromptChange = (value: string) => {
-    setSelectedPrompt(value);
+  const handleRegionChange = (region: string) => {
+    setSelectedRegion(region);
   };
 
   return (
@@ -133,39 +129,18 @@ export function Layout() {
               >
                 <div className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
                   <motion.div variants={item}>
-                    <ControlPanels 
-                      selectedModel={selectedModel}
-                      onPromptSelect={handlePromptChange}
-                      onModelSelect={(value) => handleParameterChange(setSelectedModel, value)}
-                      onAttackSelect={(value) => handleParameterChange(setSelectedAttack, value)}
-                      isAttacking={isAttacking}
-                      onAttackStart={() => {
-                        setIsAttacking(true);
-                        chatRef.current?.createSkeleton();
-                      }}
-                      onStepReady={(desc, step, bijection, advResponse) => {
-                        if (!isAttacking) return;
-                        chatRef.current?.updateStepMessage(desc, step, bijection, advResponse);
-                      }}
-                      onContinue={() => {
-                        if (!isAttacking) return;
-                        chatRef.current?.createSkeleton();
-                      }}
+                    <MapControls 
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateChange}
+                      onRegionSelect={handleRegionChange}
                       onReset={resetAllStates}
                     />
                   </motion.div>
                   <motion.div variants={item} className="flex flex-col gap-4 lg:col-span-2">
                     <div className="flex-grow">
-                      <Chat
-                        ref={chatRef}
-                        selectedPrompt={selectedPrompt}
-                        selectedModel={selectedModel}
-                        selectedAttack={selectedAttack}
-                        onAttackStart={() => {
-                          setIsAttacking(true);
-                          chatRef.current?.createSkeleton();
-                        }}
-                        onAttackComplete={() => setIsAttacking(false)}
+                      <Map
+                        ref={mapRef}
+                        selectedDate={selectedDate}
                       />
                     </div>
                   </motion.div>
@@ -177,8 +152,8 @@ export function Layout() {
       </main>
       {showIntroModal && (
         <IntroModal
-          open={showIntroModal}
-          onOpenChange={setShowIntroModal}
+          showIntroModal={showIntroModal}
+          setShowIntroModal={setShowIntroModal}
         />
       )}
     </div>

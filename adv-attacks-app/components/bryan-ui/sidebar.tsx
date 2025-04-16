@@ -1,14 +1,14 @@
 /* eslint-disable */
 import {
   BookOpen,
-  
+  // BookText,
   SquareTerminal,
-  
+  // Terminal,
   Shield,
   Moon,
   Sun,
   HelpCircle,
-  
+  Info,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -63,14 +63,14 @@ export function Sidebar({ onNavigate }: { onNavigate: (page: string) => void }){
               variant="ghost" 
               size="icon" 
               className={`w-10 h-10 rounded-lg ${selectedPage === 'papers' ? 'bg-muted' : ''}`}
-              aria-label="Papers"
+              aria-label="Information"
               onClick={() => handleNavigate('papers')}
             >
-              <BookOpen className="size-5" />
+              <Info className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
-            Papers
+            Information
           </TooltipContent>
         </Tooltip>
         <Tooltip>

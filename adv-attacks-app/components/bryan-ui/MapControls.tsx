@@ -12,8 +12,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useState, useRef, useEffect } from "react";
+import { Slider } from "@/components/ui/slider"; // Import Slider
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 // Array of month names for display
@@ -43,20 +44,78 @@ export function MapControls({
     const [selectedRegion, setSelectedRegion] = useState("global");
     const [isAutoPlaying, setIsAutoPlaying] = useState(false);
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    // Visual state for the slider position
+    const [visualTotalMonths, setVisualTotalMonths] = useState(() => 
+        (initialSelectedDate.year - 2024) * 12 + (initialSelectedDate.month - 1)
+    );
+    const animationFrameRef = useRef<number | null>(null);
     const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const isFirstRender = useRef(true);
     
-    // Base interval in milliseconds - will be divided by playback speed
-    const BASE_INTERVAL = 1000; // Increased from 500ms to 1000ms to make 1x speed slower
+    // Constants
+    const START_YEAR = 2024;
+    const END_YEAR = 2030;
+    const BASE_INTERVAL = 1500; // Slower: Base interval in ms for autoplay (1.5 seconds)
+    
+    // Calculate total months for the slider range
+    const maxTotalMonths = (END_YEAR - START_YEAR + 1) * 12 - 1; // 0-indexed
     
     // Calculate the total months since Jan 2024 (0-based index)
-    const totalMonths = (selectedDate.year - 2024) * 12 + (selectedDate.month - 1);
-    // Calculate the maximum total months (Dec 2030)
-    const maxTotalMonths = (2030 - 2024) * 12 + 11; // 83 months total
+    const totalMonths = (selectedDate.year - START_YEAR) * 12 + (selectedDate.month - 1);
+    
+    // Sync visual state if not auto-playing or on initial load
+    useEffect(() => {
+        if (!isAutoPlaying || isFirstRender.current) {
+            setVisualTotalMonths(totalMonths);
+        }
+    }, [totalMonths, isAutoPlaying]);
+    
+    // Effect to smoothly animate the slider during playback
+    useEffect(() => {
+        if (isAutoPlaying) {
+            // Cancel previous frame if any
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
 
+            const animationDuration = BASE_INTERVAL / playbackSpeed; // Duration matches the step interval
+            const startTime = performance.now();
+            const startValue = visualTotalMonths; // Start from the current visual position
+            const endValue = totalMonths; // Target the actual simulation month
+
+            const animate = (currentTime: number) => {
+                const elapsedTime = currentTime - startTime;
+                const progress = Math.min(elapsedTime / animationDuration, 1);
+                
+                // Simple linear interpolation
+                const currentValue = startValue + (endValue - startValue) * progress;
+                
+                setVisualTotalMonths(currentValue);
+
+                if (progress < 1) {
+                    animationFrameRef.current = requestAnimationFrame(animate);
+                } else {
+                    setVisualTotalMonths(endValue); // Ensure it ends exactly at the target
+                    animationFrameRef.current = null;
+                }
+            };
+
+            animationFrameRef.current = requestAnimationFrame(animate);
+        }
+
+        // Cleanup function to cancel animation if component unmounts or dependencies change
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = null;
+            }
+        };
+        // Only re-run when the *actual* month changes during playback
+    }, [totalMonths, isAutoPlaying, playbackSpeed]); 
+    
     // Reset all selections to default values
     const resetSelections = () => {
-        setSelectedDate({ year: 2024, month: 1 });
+        setSelectedDate({ year: START_YEAR, month: 1 });
         setSelectedRegion("global");
         setIsAutoPlaying(false);
         setPlaybackSpeed(1);
@@ -64,7 +123,12 @@ export function MapControls({
             clearInterval(autoPlayIntervalRef.current);
             autoPlayIntervalRef.current = null;
         }
-        onDateSelect?.({ year: 2024, month: 1 });
+        // Ensure animation stops on reset
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+            animationFrameRef.current = null;
+        }
+        onDateSelect?.({ year: START_YEAR, month: 1 });
         onRegionSelect?.("global");
     };
 
@@ -74,14 +138,17 @@ export function MapControls({
         onReset?.();
     };
 
-    // Handle date change from slider
+    // Handle date change from slider (manual scrubbing)
     const handleDateChange = (value: number[]) => {
+        handleSliderInteraction(); // Stop playback and animation
+
         const monthsFromStart = value[0];
-        const year = 2024 + Math.floor(monthsFromStart / 12);
+        const year = START_YEAR + Math.floor(monthsFromStart / 12);
         const month = (monthsFromStart % 12) + 1; // 1-based month
-        
+
         const newDate = { year, month };
         setSelectedDate(newDate);
+        setVisualTotalMonths(monthsFromStart); // Update visual state directly
         onDateSelect?.(newDate);
     };
 
@@ -98,13 +165,13 @@ export function MapControls({
             }
             
             // Check if we've reached the end date (Dec 2030)
-            if (newYear > 2030 || (newYear === 2030 && newMonth > 12)) {
+            if (newYear > END_YEAR || (newYear === END_YEAR && newMonth > 12)) {
                 if (autoPlayIntervalRef.current) {
                     clearInterval(autoPlayIntervalRef.current);
                     autoPlayIntervalRef.current = null;
                 }
                 setIsAutoPlaying(false);
-                return { year: 2030, month: 12 };
+                return { year: END_YEAR, month: 12 };
             }
             
             const newDate = { year: newYear, month: newMonth };
@@ -192,6 +259,20 @@ export function MapControls({
         };
     }, []);
 
+    // Stop auto-play when user manually interacts with the slider
+    const handleSliderInteraction = () => {
+        // Also cancel any ongoing animation
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+            animationFrameRef.current = null;
+        }
+        setIsAutoPlaying(false);
+        if (autoPlayIntervalRef.current) {
+            clearInterval(autoPlayIntervalRef.current);
+            autoPlayIntervalRef.current = null;
+        }
+    };
+
 	return (
 		<div className="relative flex-col items-start gap-8 md:flex">
 			<div className="grid w-full items-start gap-6">
@@ -231,16 +312,17 @@ export function MapControls({
                                 <Calendar className="h-4 w-4" />
                                 Date: {MONTH_NAMES[selectedDate.month - 1]} {selectedDate.year}
                             </Label>
-                            <input
+                            <Slider
                                 id="date"
-                                type="range"
                                 min={0}
                                 max={maxTotalMonths}
                                 step={1}
-                                value={totalMonths}
-                                onChange={(e) => handleDateChange([parseInt(e.target.value)])}
+                                // Use visual state for slider value
+                                value={[visualTotalMonths]}
+                                onValueChange={handleDateChange} // Handles manual scrubbing
+                                onPointerDown={handleSliderInteraction} // Stop animation/playback immediately on click/drag start
                                 disabled={isAutoPlaying}
-                                className="w-full"
+                                className="w-full mt-2" // Added mt-2 for top margin
                             />
                         </div>
                         
@@ -297,10 +379,7 @@ export function MapControls({
                                         <span className="text-muted-foreground">Mortality Rate:</span>
                                         <span>{Math.min(1 + totalMonths * 0.04, 25).toFixed(1)}%</span>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Mask Availability:</span>
-                                        <span>{Math.max(80 - totalMonths * 0.33, 20).toFixed(1)}%</span>
-                                    </div>
+                                    
                                 </div>
                             </CardContent>
                         </Card>

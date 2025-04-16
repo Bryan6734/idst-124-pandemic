@@ -9,7 +9,7 @@ export function Settings() {
   return (
     <div className="p-6 pt-10 max-w-4xl mx-auto space-y-8">
       <div className="pt-4">
-        <h2 className="text-2xl font-bold mb-2">Frequently Asked Questions</h2>
+        <h2 className="text-3xl font-bold mb-2">Frequently Asked Questions</h2>
         <p className="text-muted-foreground mb-6">
           Common questions about the P-25 virus, its symptoms, prevention, and treatment.
         </p>
